@@ -1,0 +1,24 @@
+Execution Details (2024-06-06 00:45:31.236298):
+Execution Time: 0.0 seconds
+Number of Threads Used: 1
+Assignments: 2
+Evaluations: 4
+Reversals: 1
+Memory Usage: 576 bytes
+
+Execution Details (2024-06-06 01:12:14.115692):
+Execution Time: 0.0 seconds
+Number of Threads Used: 1
+Assignments: 6
+Evaluations: 17
+Reversals: 1
+Memory Usage: 1268 bytes
+
+Execution Details (2024-06-06 01:15:45.764726):
+Execution Time: 0.0 seconds
+Number of Threads Used: 1
+Assignments: 7
+Evaluations: 18
+Reversals: 2
+Memory Usage: 1324 bytes
+
