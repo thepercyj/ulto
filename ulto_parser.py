@@ -94,7 +94,6 @@ class Parser:
         raise Exception(f'Invalid syntax at token {self.current_token}')
 
 
-# Example usage
 if __name__ == '__main__':
     from lexer import tokenize
 

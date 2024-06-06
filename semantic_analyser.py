@@ -18,7 +18,7 @@ class SemanticAnalyser:
     def process_assignment(self, node):
         _, var_name, value = node
         self.evaluate_expression(value)
-        self.symbol_table[var_name] = None  # Mark the variable as declared
+        self.symbol_table[var_name] = None
 
     def process_reverse(self, node):
         _, var_name = node
@@ -55,7 +55,7 @@ class SemanticAnalyser:
     def error(self, message):
         raise Exception(f'Semantic error: {message}')
 
-# Example usage
+
 if __name__ == '__main__':
     from ulto_parser import Parser
     from lexer import tokenize

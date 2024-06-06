@@ -40,7 +40,7 @@ class ExecutionEngine:
         print(f"Evaluated value of {var_name}: {evaluated_value}")
         previous_value = self.symbol_table.get(var_name, None)
         if var_name not in self.symbol_table:
-            self.symbol_table[var_name] = None  # Initialize if not present
+            self.symbol_table[var_name] = None
         self.history.append((var_name, previous_value))
         self.symbol_table[var_name] = evaluated_value
         print(f"Updated value of {var_name}: {self.symbol_table[var_name]}")
@@ -86,7 +86,7 @@ class ExecutionEngine:
         self.reversals += 1
         _, var_name = node
         previous_value = self.find_previous_value(var_name)
-        print(f"Previous value of {var_name}: {previous_value}")  # Debug statement
+        print(f"Previous value of {var_name}: {previous_value}")
         if previous_value is not None or var_name in self.symbol_table:
             self.history.append((var_name, self.symbol_table[var_name]))
             self.symbol_table[var_name] = previous_value
@@ -95,11 +95,11 @@ class ExecutionEngine:
             self.error(f'No previous value found for variable "{var_name}"')
 
     def find_previous_value(self, var_name):
-        print(f"Finding previous value for {var_name}")  # Debug statement
+        print(f"Finding previous value for {var_name}")
         for var, value in reversed(self.history):
             if var == var_name:
-                print(f"Previous value found: {value}")  # Debug statement
-                self.history.remove((var, value))  # Remove the found value
+                print(f"Previous value found: {value}")
+                self.history.remove((var, value))
                 return value
         return None
 

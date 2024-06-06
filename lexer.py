@@ -3,22 +3,22 @@ import re
 def tokenize(code):
     tokens = []
     token_specification = [
-        ('NUMBER', r'\d+'),  # Integer
-        ('ASSIGN', r'assign'),  # Assignment keyword
-        ('TO', r'to'),  # To keyword
-        ('ID', r'[A-Za-z]+'),  # Identifiers
-        ('PLUS', r'plus'),  # Addition operator
-        ('MINUS', r'minus'),  # Subtraction operator
-        ('MULTIPLY', r'times'),  # Multiplication operator
-        ('DIVIDE', r'over'),  # Division operator
-        ('REVERSE', r'reverse'),  # Reverse keyword
-        ('IF', r'if'),  # If keyword
-        ('ELSE', r'else'),  # Else keyword
-        ('ENDIF', r'endif'),  # Endif keyword
-        ('EQ', r'=='),  # Equality operator
-        ('SKIP', r'[ \t]+'),  # Skip over spaces and tabs
-        ('NEWLINE', r'\n'),  # Line endings
-        ('MISMATCH', r'.'),  # Any other character
+        ('NUMBER', r'\d+'),
+        ('ASSIGN', r'assign'),
+        ('TO', r'to'),
+        ('ID', r'[A-Za-z]+'),
+        ('PLUS', r'plus'),
+        ('MINUS', r'minus'),
+        ('MULTIPLY', r'times'),
+        ('DIVIDE', r'over'),
+        ('REVERSE', r'reverse'),
+        ('IF', r'if'),
+        ('ELSE', r'else'),
+        ('ENDIF', r'endif'),
+        ('EQ', r'=='),
+        ('SKIP', r'[ \t]+'),
+        ('NEWLINE', r'\n'),
+        ('MISMATCH', r'.'),
     ]
     tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
     line_num = 1
@@ -42,7 +42,7 @@ def tokenize(code):
         tokens.append((kind, value, line_num, column))
     return tokens
 
-# Example usage
+
 if __name__ == '__main__':
     code = """
     assign x to 5
