@@ -41,3 +41,4 @@ class Interpreter:
                 del self.variables[var_name]
             else:
                 self.variables[var_name] = old_value
+
