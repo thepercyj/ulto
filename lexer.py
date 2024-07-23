@@ -1,63 +1,48 @@
 import re
 
-def tokenize(code):
-    tokens = []
-    token_specification = [
-        ('NUMBER', r'\d+'),
-        ('ASSIGN', r'assign'),
-        ('TO', r'to'),
-        ('ID', r'[A-Za-z]+'),
-        ('PLUS', r'plus'),
-        ('MINUS', r'minus'),
-        ('MULTIPLY', r'times'),
-        ('DIVIDE', r'over'),
-        ('REVERSE', r'reverse'),
-        ('IF', r'if'),
-        ('ELSE', r'else'),
-        ('ENDIF', r'endif'),
-        ('EQ', r'=='),
-        ('SKIP', r'[ \t]+'),
-        ('NEWLINE', r'\n'),
-        ('MISMATCH', r'.'),
-    ]
-    tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
-    line_num = 1
-    line_start = 0
-    for mo in re.finditer(tok_regex, code):
-        kind = mo.lastgroup
-        value = mo.group()
-        column = mo.start() - line_start
-        if kind == 'NUMBER':
-            value = int(value)
-        elif kind == 'ID' and value in ('assign', 'to', 'reverse', 'plus', 'minus', 'times', 'over', 'if', 'else', 'endif'):
-            kind = value.upper()
-        elif kind == 'NEWLINE':
-            line_start = mo.end()
-            line_num += 1
-            continue
-        elif kind == 'SKIP':
-            continue
-        elif kind == 'MISMATCH':
-            raise RuntimeError(f'{value!r} unexpected on line {line_num}')
-        tokens.append((kind, value, line_num, column))
-    return tokens
 
+class Lexer:
+    def __init__(self, input_code):
+        self.tokens = []
+        self.current_token = None
+        self.position = 0
+        self.input_code = input_code
+        self.tokenize()
 
-if __name__ == '__main__':
-    code = """
-    assign x to 5
-    assign y to x plus 3
-    reverse y
-    assign z to x minus 2
-    assign w to x times 4
-    assign v to x over 2
-    if x == 5
-    assign a to 1
-    else
-    assign a to 2
-    endif
-    """
+    def tokenize(self):
+        token_specification = [
+            ('NUMBER', r'\d+(\.\d*)?'),
+            ('ASSIGN', r'='),
+            ('PLUS', r'\+'),
+            ('MINUS', r'-'),
+            ('MULTIPLY', r'\*'),
+            ('DIVIDE', r'/'),
+            ('LPAREN', r'\('),
+            ('RPAREN', r'\)'),
+            ('ID', r'[A-Za-z_]\w*'),
+            ('SKIP', r'[ \t]+'),
+            ('NEWLINE', r'\n'),
+            ('MISMATCH', r'.'),
+        ]
+        tok_regex = '|'.join(f'(?P<{pair[0]}>{pair[1]})' for pair in token_specification)
+        for mo in re.finditer(tok_regex, self.input_code):
+            kind = mo.lastgroup
+            value = mo.group()
+            if kind == 'NUMBER':
+                value = float(value) if '.' in value else int(value)
+            elif kind == 'ID' and value == 'print':
+                kind = 'PRINT'
+            elif kind == 'SKIP' or kind == 'NEWLINE':
+                continue
+            elif kind == 'MISMATCH':
+                raise RuntimeError(f'{value!r} unexpected')
+            self.tokens.append((kind, value))
+        self.tokens.append(('EOF', None))
 
-    tokens = tokenize(code)
-    for token in tokens:
-        print(token)
+    def next_token(self):
+        if self.position < len(self.tokens):
+            self.current_token = self.tokens[self.position]
+            self.position += 1
+        else:
+            self.current_token = ('EOF', None)
+        return self.current_token
