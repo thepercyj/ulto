@@ -145,18 +145,19 @@ if __name__ == '__main__':
     from lexer import tokenize
 
     code = """
-    assign x to 5
-    assign y to x plus 3
-    reverse y
-    assign z to x minus 2
-    assign z to x
-    reverse z
-    assign w to x times 4
-    assign v to x over 2
-    if x == 5
-    assign a to 1
-    else
-    assign a to 2
+    x = 5
+    y = x + 3
+    rev y
+    z = x - 2
+    z = x
+    rev z
+    w = x * 4
+    v = x / 2
+
+    if x == 5:
+        a = 1
+    else:
+        a = 2
     endif
     """
 

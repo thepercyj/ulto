@@ -15,9 +15,12 @@ class Parser:
     def parse(self):
         statements = []
         while self.current_token is not None:
-            if self.current_token[0] == 'ASSIGN':
+            if self.current_token[0] == 'NEWLINE':
+                self.advance()
+                continue
+            elif self.current_token[0] == 'ID':
                 statements.append(self.parse_assignment())
-            elif self.current_token[0] == 'REVERSE':
+            elif self.current_token[0] == 'REV':
                 statements.append(self.parse_reverse())
             elif self.current_token[0] == 'IF':
                 statements.append(self.parse_if())
@@ -26,22 +29,16 @@ class Parser:
         return statements
 
     def parse_assignment(self):
-        self.consume('ASSIGN')
         var_name = self.consume('ID')
-        self.consume('TO')
+        self.consume('ASSIGN')
         value = self.parse_expression()
+        self.advance_newline()
         return ('assign', var_name, value)
 
     def parse_expression(self):
         left = self.consume_value()
-        while self.current_token and self.current_token[0] in ('PLUS', 'MINUS', 'TIMES', 'OVER', 'EQ'):
+        while self.current_token and self.current_token[0] in ('PLUS', 'MINUS', 'MULTIPLY', 'DIVIDE', 'EQ'):
             op = self.current_token[0].lower()
-            if op == 'times':
-                op = 'multiply'
-            elif op == 'over':
-                op = 'divide'
-            elif op == 'eq':
-                op = '=='
             self.advance()
             right = self.consume_value()
             left = (left, op, right)
@@ -50,31 +47,41 @@ class Parser:
     def parse_if(self):
         self.consume('IF')
         condition = self.parse_expression()
-        true_branch = []
+        self.advance_newline()
+        true_branch = self.parse_block()
         false_branch = []
-        while self.current_token and self.current_token[0] not in ('ELSE', 'ENDIF'):
-            true_branch.append(self.parse_statement())
         if self.current_token and self.current_token[0] == 'ELSE':
             self.consume('ELSE')
-            while self.current_token and self.current_token[0] != 'ENDIF':
-                false_branch.append(self.parse_statement())
+            self.advance_newline()
+            false_branch = self.parse_block()
         self.consume('ENDIF')
+        self.advance_newline()
         return ('if', condition, true_branch, false_branch)
 
     def parse_reverse(self):
-        self.consume('REVERSE')
+        self.consume('REV')
         var_name = self.consume('ID')
+        self.advance_newline()
         return ('reverse', var_name)
 
     def parse_statement(self):
-        if self.current_token[0] == 'ASSIGN':
+        if self.current_token[0] == 'ID':
             return self.parse_assignment()
-        elif self.current_token[0] == 'REVERSE':
+        elif self.current_token[0] == 'REV':
             return self.parse_reverse()
         elif self.current_token[0] == 'IF':
             return self.parse_if()
         else:
             self.error()
+
+    def parse_block(self):
+        block = []
+        while self.current_token and self.current_token[0] != 'ELSE' and self.current_token[0] != 'ENDIF':
+            if self.current_token[0] == 'NEWLINE':
+                self.advance()
+                continue
+            block.append(self.parse_statement())
+        return block
 
     def consume(self, token_type):
         if self.current_token and self.current_token[0] == token_type:
@@ -90,28 +97,36 @@ class Parser:
         else:
             self.error()
 
+    def advance_newline(self):
+        if self.current_token and self.current_token[0] == 'NEWLINE':
+            self.advance()
+
     def error(self):
         raise Exception(f'Invalid syntax at token {self.current_token}')
 
 
-# if __name__ == '__main__':
-#     from lexer import tokenize
-#
-#     code = """
-#     assign x to 5
-#     assign y to x plus 3
-#     reverse y
-#     assign z to x minus 2
-#     assign w to x times 4
-#     assign v to x over 2
-#     if x == 5
-#     assign a to 1
-#     else
-#     assign a to 2
-#     endif
-#     """
-#
-#     tokens = tokenize(code)
-#     parser = Parser(tokens)
-#     ast = parser.parse()
-#     print(ast)
+# Example usage
+if __name__ == '__main__':
+    from lexer import tokenize
+
+    code = """
+    x = 5
+    y = x + 3
+    rev y
+    z = x - 2
+    z = x
+    rev z
+    w = x * 4
+    v = x / 2
+
+    if x == 5
+        a = 1
+    else
+        a = 2
+    endif
+    """
+
+    tokens = tokenize(code)
+    parser = Parser(tokens)
+    ast = parser.parse()
+    print(ast)
