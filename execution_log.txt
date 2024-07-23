@@ -22,3 +22,11 @@ Evaluations: 18
 Reversals: 2
 Memory Usage: 1324 bytes
 
+Execution Details (2024-07-23 16:40:13.532036):
+Execution Time: 0.0 seconds
+Number of Threads Used: 1
+Assignments: 7
+Evaluations: 18
+Reversals: 2
+Memory Usage: 1324 bytes
+
