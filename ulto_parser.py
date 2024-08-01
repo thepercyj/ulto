@@ -1,3 +1,9 @@
+# Ulto - Imperative Reversible Programming Language
+#
+# ulto_parser.py
+#
+# Aman Thapa Magar <at719@sussex.ac.uk>
+
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens

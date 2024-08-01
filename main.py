@@ -1,8 +1,16 @@
+# Ulto - Imperative Reversible Programming Language
+#
+# main.py
+#
+# Aman Thapa Magar <at719@sussex.ac.uk>
+
+
 import sys
 from lexer import tokenize
 from ulto_parser import Parser
 from execution_engine import ExecutionEngine
 from semantic_analyser import SemanticAnalyser
+
 
 def main(filename):
     # Read the code from the file
@@ -28,6 +36,7 @@ def main(filename):
 
     # Print the final state of the variables
     print("Final state of variables:", engine.symbol_table)
+
 
 if __name__ == '__main__':
     # Check if the filename is provided

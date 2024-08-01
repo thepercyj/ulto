@@ -1,3 +1,9 @@
+# Ulto - Imperative Reversible Programming Language
+#
+# lexer.py
+#
+# Aman Thapa Magar <at719@sussex.ac.uk>
+
 import re
 
 def tokenize(code):
