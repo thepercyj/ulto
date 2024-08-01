@@ -6,6 +6,7 @@ class Parser:
         self.advance()
 
     def advance(self):
+        # Advance to the next token
         if self.pos < len(self.tokens):
             self.current_token = self.tokens[self.pos]
             self.pos += 1
@@ -15,75 +16,149 @@ class Parser:
     def parse(self):
         statements = []
         while self.current_token is not None:
-            if self.current_token[0] == 'NEWLINE':
-                self.advance()
-                continue
-            elif self.current_token[0] == 'ID':
+            if self.current_token[0] == 'CLASS':
+                statements.append(self.parse_class())
+            elif self.current_token[0] == 'ID' and self.peek_next_token()[0] == 'ASSIGN':
                 statements.append(self.parse_assignment())
             elif self.current_token[0] == 'REV':
                 statements.append(self.parse_reverse())
             elif self.current_token[0] == 'IF':
                 statements.append(self.parse_if())
+            elif self.current_token[0] == 'WHILE':
+                statements.append(self.parse_while())
+            elif self.current_token[0] == 'PRINT':
+                statements.append(self.parse_print())
             else:
                 self.error()
         return statements
 
+    def parse_class(self):
+        # Parse a class definition
+        self.consume('CLASS')
+        class_name = self.consume('ID')
+        self.consume('COLON')
+        methods = []
+        while self.current_token and self.current_token[0] != 'NEWLINE':
+            if self.current_token[0] == 'DEF':
+                methods.append(self.parse_function())
+        return ('class', class_name, methods)
+
+    def parse_function(self):
+        # Parse a function definition
+        self.consume('DEF')
+        func_name = self.consume('ID')
+        self.consume('LPAREN')
+        params = []
+        if self.current_token[0] != 'RPAREN':
+            params.append(self.consume('ID'))
+            while self.current_token[0] == 'COMMA':
+                self.consume('COMMA')
+                params.append(self.consume('ID'))
+        self.consume('RPAREN')
+        self.consume('COLON')
+        body = []
+        while self.current_token and self.current_token[0] != 'RETURN':
+            body.append(self.parse_statement())
+        return_value = self.parse_return()
+        body.append(return_value)
+        return ('function', func_name, params, body)
+
+    def parse_return(self):
+        # Parse a return statement
+        self.consume('RETURN')
+        value = self.parse_expression()
+        return ('return', value)
+
+    def parse_statement(self):
+        # Parse different types of statements
+        if self.current_token[0] == 'ID' and self.peek_next_token()[0] == 'ASSIGN':
+            return self.parse_assignment()
+        elif self.current_token[0] == 'REV':
+            return self.parse_reverse()
+        elif self.current_token[0] == 'RETURN':
+            return self.parse_return()
+        elif self.current_token[0] == 'IF':
+            return self.parse_if()
+        elif self.current_token[0] == 'WHILE':
+            return self.parse_while()
+        elif self.current_token[0] == 'PRINT':
+            return self.parse_print()
+        else:
+            self.error()
+
     def parse_assignment(self):
+        # Parse an assignment statement
         var_name = self.consume('ID')
         self.consume('ASSIGN')
         value = self.parse_expression()
-        self.advance_newline()
         return ('assign', var_name, value)
 
     def parse_expression(self):
+        # Parse an expression
         left = self.consume_value()
-        while self.current_token and self.current_token[0] in ('PLUS', 'MINUS', 'MULTIPLY', 'DIVIDE', 'EQ'):
+        while self.current_token and self.current_token[0] in ('PLUS', 'MINUS', 'TIMES', 'OVER', 'EQ', 'NEQ', 'LT', 'GT', 'LTE', 'GTE', 'DOT'):
             op = self.current_token[0].lower()
             self.advance()
-            right = self.consume_value()
-            left = (left, op, right)
+            if op == 'dot':
+                method_name = self.consume('ID')
+                self.consume('LPAREN')
+                args = []
+                if self.current_token[0] != 'RPAREN':
+                    args.append(self.consume_value())
+                    while self.current_token[0] == 'COMMA':
+                        self.consume('COMMA')
+                        args.append(self.consume_value())
+                self.consume('RPAREN')
+                left = (left, 'call', method_name, args)
+            else:
+                right = self.consume_value()
+                left = (left, op, right)
         return left
 
+    def parse_reverse(self):
+        # Parse a reverse statement
+        self.consume('REV')
+        var_name = self.consume('ID')
+        return ('reverse', var_name)
+
     def parse_if(self):
+        # Parse an if statement
         self.consume('IF')
         condition = self.parse_expression()
-        self.advance_newline()
+        self.consume('COLON')
         true_branch = self.parse_block()
         false_branch = []
         if self.current_token and self.current_token[0] == 'ELSE':
             self.consume('ELSE')
-            self.advance_newline()
+            self.consume('COLON')
             false_branch = self.parse_block()
-        self.consume('ENDIF')
-        self.advance_newline()
         return ('if', condition, true_branch, false_branch)
 
-    def parse_reverse(self):
-        self.consume('REV')
-        var_name = self.consume('ID')
-        self.advance_newline()
-        return ('reverse', var_name)
+    def parse_while(self):
+        # Parse a while loop
+        self.consume('WHILE')
+        condition = self.parse_expression()
+        self.consume('COLON')
+        body = self.parse_block()
+        return ('while', condition, body)
 
-    def parse_statement(self):
-        if self.current_token[0] == 'ID':
-            return self.parse_assignment()
-        elif self.current_token[0] == 'REV':
-            return self.parse_reverse()
-        elif self.current_token[0] == 'IF':
-            return self.parse_if()
-        else:
-            self.error()
+    def parse_print(self):
+        # Parse a print statement
+        self.consume('PRINT')
+        self.consume('LPAREN')
+        value = self.parse_expression()
+        self.consume('RPAREN')
+        return ('print', value)
 
     def parse_block(self):
-        block = []
-        while self.current_token and self.current_token[0] != 'ELSE' and self.current_token[0] != 'ENDIF':
-            if self.current_token[0] == 'NEWLINE':
-                self.advance()
-                continue
-            block.append(self.parse_statement())
-        return block
+        # Parse a block of statements
+        statements = []
+        while self.current_token and self.current_token[0] != 'NEWLINE' and self.current_token[0] != 'ELSE':
+            statements.append(self.parse_statement())
+        return statements
 
     def consume(self, token_type):
+        # Consume a token of the given type
         if self.current_token and self.current_token[0] == token_type:
             value = self.current_token[1]
             self.advance()
@@ -92,41 +167,28 @@ class Parser:
             self.error()
 
     def consume_value(self):
-        if self.current_token and (self.current_token[0] == 'NUMBER' or self.current_token[0] == 'ID'):
+        # Consume a value (number, identifier, string, or list)
+        if self.current_token[0] == 'LBRACKET':
+            self.consume('LBRACKET')
+            elements = []
+            while self.current_token[0] != 'RBRACKET':
+                elements.append(self.consume_value())
+                if self.current_token[0] == 'COMMA':
+                    self.consume('COMMA')
+            self.consume('RBRACKET')
+            return elements
+        elif self.current_token and self.current_token[0] in ('NUMBER', 'ID', 'STRING'):
             return self.consume(self.current_token[0])
         else:
             self.error()
 
-    def advance_newline(self):
-        if self.current_token and self.current_token[0] == 'NEWLINE':
-            self.advance()
+    def peek_next_token(self):
+        # Peek at the next token without consuming it
+        if self.pos < len(self.tokens):
+            return self.tokens[self.pos]
+        else:
+            return None
 
     def error(self):
+        # Raise a syntax error
         raise Exception(f'Invalid syntax at token {self.current_token}')
-
-
-# Example usage
-if __name__ == '__main__':
-    from lexer import tokenize
-
-    code = """
-    x = 5
-    y = x + 3
-    rev y
-    z = x - 2
-    z = x
-    rev z
-    w = x * 4
-    v = x / 2
-
-    if x == 5
-        a = 1
-    else
-        a = 2
-    endif
-    """
-
-    tokens = tokenize(code)
-    parser = Parser(tokens)
-    ast = parser.parse()
-    print(ast)
