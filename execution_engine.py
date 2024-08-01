@@ -10,7 +10,6 @@ import time
 import threading
 from datetime import datetime
 
-
 class ExecutionEngine:
     def __init__(self, ast, symbol_table):
         self.ast = ast
@@ -21,7 +20,7 @@ class ExecutionEngine:
         self.reversals = 0
         self.energy_cost = 0
 
-        # Defining virtual cost for all types of operations performed within a single source code.
+        # Define costs for operations
         self.costs = {
             'assignment': 1,  # Energy cost for assignment
             'evaluation': 2,  # Energy cost for evaluation
@@ -30,7 +29,6 @@ class ExecutionEngine:
         }
 
     def execute(self):
-        # Execute each node in the AST
         start_time = time.time()
         for node in self.ast:
             self.execute_node(node)
@@ -41,7 +39,6 @@ class ExecutionEngine:
         self.log_execution_details(start_time, end_time)
 
     def execute_node(self, node):
-        # Dispatch the node type to the appropriate method
         if node[0] == 'assign':
             self.execute_assignment(node)
         elif node[0] == 'reverse':
@@ -67,22 +64,18 @@ class ExecutionEngine:
         self.assignments += 1
         self.energy_cost += self.costs['assignment']
         _, var_name, value = node
-        # Evaluate the expression being assigned
         evaluated_value = self.evaluate_expression(value)
         print(f"Evaluated value of {var_name}: {evaluated_value}")
         previous_value = self.symbol_table.get(var_name, None)
-        # Save the previous value to history
         if var_name not in self.symbol_table:
-            self.symbol_table[var_name] = None
+            self.symbol_table[var_name] = None  # Initialize if not present
         self.history.append((var_name, previous_value))
         self.symbol_table[var_name] = evaluated_value
         print(f"Updated value of {var_name}: {self.symbol_table[var_name]}")
 
     def execute_if(self, node):
         _, condition, true_branch, false_branch = node
-        # Evaluate the condition expression
         condition_result = self.evaluate_expression(condition)
-        # Execute the appropriate branch
         if condition_result:
             for stmt in true_branch:
                 self.execute_node(stmt)
@@ -92,21 +85,18 @@ class ExecutionEngine:
 
     def execute_while(self, node):
         _, condition, body = node
-        # Evaluate the condition and execute the loop body
         while self.evaluate_expression(condition):
             for stmt in body:
                 self.execute_node(stmt)
 
     def execute_print(self, node):
         _, value = node
-        # Evaluate and print the expression
         evaluated_value = self.evaluate_expression(value)
         print(evaluated_value)
 
     def evaluate_expression(self, expr):
         self.evaluations += 1
         self.energy_cost += self.costs['evaluation']
-        # Evaluate different types of expressions
         if isinstance(expr, list):
             return [self.evaluate_expression(item) for item in expr]
         elif isinstance(expr, tuple) and len(expr) == 3:
@@ -141,7 +131,7 @@ class ExecutionEngine:
             return expr
         elif isinstance(expr, str):
             if expr.startswith('"') and expr.endswith('"'):
-                return expr[1:-1]
+                return expr[1:-1]  # Return the string literal without quotes
             elif expr in self.symbol_table:
                 return self.symbol_table[expr]
             else:
@@ -152,8 +142,8 @@ class ExecutionEngine:
         self.reversals += 1
         self.energy_cost += self.costs['reversal']
         _, var_name = node
-        # Find and restore the previous value of the variable
         previous_value = self.find_previous_value(var_name)
+        print(f"Previous value of {var_name}: {previous_value}")  # Debug statement
         if previous_value is not None or var_name in self.symbol_table:
             self.history.append((var_name, self.symbol_table[var_name]))
             self.symbol_table[var_name] = previous_value
@@ -162,21 +152,21 @@ class ExecutionEngine:
             self.error(f'No previous value found for variable "{var_name}"')
 
     def find_previous_value(self, var_name):
-        # Find the previous value of the variable in the history
+        print(f"Finding previous value for {var_name}")  # Debug statement
         for var, value in reversed(self.history):
             if var == var_name:
-                self.history.remove((var, value))
+                print(f"Previous value found: {value}")  # Debug statement
+                self.history.remove((var, value))  # Remove the found value
                 return value
         return None
 
     def execute_import(self, node):
         _, module_name = node
-        # Handle module import if necessary
+        # Implement import logic as needed
         print(f"Imported module: {module_name}")
 
     def execute_class(self, node):
         _, class_name, methods = node
-        # Register the class in the symbol table
         self.symbol_table[class_name] = {
             'type': 'class',
             'methods': {method[1]: method for method in methods}
@@ -185,15 +175,13 @@ class ExecutionEngine:
 
     def execute_function(self, node):
         _, func_name, params, body = node
-        # Handle function definition if necessary
+        # Implement function execution logic as needed
         print(f"Defined function: {func_name}")
 
     def error(self, message):
-        # Raise an execution error
         raise Exception(f'Execution error: {message}')
 
     def print_computation_cost(self):
-        # Print the computation cost details
         print("\nComputation Cost:")
         print(f"Assignments: {self.assignments}")
         print(f"Evaluations: {self.evaluations}")
@@ -203,7 +191,6 @@ class ExecutionEngine:
         print(f"Memory Usage: {memory_usage} bytes")
 
     def get_memory_usage(self):
-        # Calculate memory usage
         symbol_table_size = sys.getsizeof(self.symbol_table)
         history_size = sys.getsizeof(self.history)
         total_size = symbol_table_size + history_size
@@ -215,7 +202,6 @@ class ExecutionEngine:
         return total_size
 
     def log_execution_details(self, start_time, end_time):
-        # Log the execution details
         num_threads = threading.active_count()
         execution_time = end_time - start_time
         with open("execution_log.txt", "a") as log_file:
@@ -228,3 +214,4 @@ class ExecutionEngine:
             log_file.write(f"Energy Cost: {self.energy_cost} units\n")
             log_file.write(f"Memory Usage: {self.get_memory_usage()} bytes\n")
             log_file.write("\n")
+

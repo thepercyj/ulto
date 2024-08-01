@@ -30,3 +30,21 @@ Evaluations: 18
 Reversals: 2
 Memory Usage: 1324 bytes
 
+Execution Details (2024-08-01 15:29:01.018089):
+Execution Time: 0.027856826782226562 seconds
+Number of Threads Used: 1
+Assignments: 46
+Evaluations: 145
+Reversals: 0
+Energy Cost: 336 units
+Memory Usage: 3980 bytes
+
+Execution Details (2024-08-01 15:30:53.680754):
+Execution Time: 0.02430415153503418 seconds
+Number of Threads Used: 1
+Assignments: 46
+Evaluations: 145
+Reversals: 0
+Energy Cost: 336 units
+Memory Usage: 3980 bytes
+

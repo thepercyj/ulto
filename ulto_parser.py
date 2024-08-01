@@ -12,7 +12,6 @@ class Parser:
         self.advance()
 
     def advance(self):
-        # Advance to the next token
         if self.pos < len(self.tokens):
             self.current_token = self.tokens[self.pos]
             self.pos += 1
@@ -39,7 +38,6 @@ class Parser:
         return statements
 
     def parse_class(self):
-        # Parse a class definition
         self.consume('CLASS')
         class_name = self.consume('ID')
         self.consume('COLON')
@@ -50,7 +48,6 @@ class Parser:
         return ('class', class_name, methods)
 
     def parse_function(self):
-        # Parse a function definition
         self.consume('DEF')
         func_name = self.consume('ID')
         self.consume('LPAREN')
@@ -70,13 +67,11 @@ class Parser:
         return ('function', func_name, params, body)
 
     def parse_return(self):
-        # Parse a return statement
         self.consume('RETURN')
         value = self.parse_expression()
         return ('return', value)
 
     def parse_statement(self):
-        # Parse different types of statements
         if self.current_token[0] == 'ID' and self.peek_next_token()[0] == 'ASSIGN':
             return self.parse_assignment()
         elif self.current_token[0] == 'REV':
@@ -93,14 +88,12 @@ class Parser:
             self.error()
 
     def parse_assignment(self):
-        # Parse an assignment statement
         var_name = self.consume('ID')
         self.consume('ASSIGN')
         value = self.parse_expression()
         return ('assign', var_name, value)
 
     def parse_expression(self):
-        # Parse an expression
         left = self.consume_value()
         while self.current_token and self.current_token[0] in ('PLUS', 'MINUS', 'TIMES', 'OVER', 'EQ', 'NEQ', 'LT', 'GT', 'LTE', 'GTE', 'DOT'):
             op = self.current_token[0].lower()
@@ -122,13 +115,11 @@ class Parser:
         return left
 
     def parse_reverse(self):
-        # Parse a reverse statement
         self.consume('REV')
         var_name = self.consume('ID')
         return ('reverse', var_name)
 
     def parse_if(self):
-        # Parse an if statement
         self.consume('IF')
         condition = self.parse_expression()
         self.consume('COLON')
@@ -141,7 +132,6 @@ class Parser:
         return ('if', condition, true_branch, false_branch)
 
     def parse_while(self):
-        # Parse a while loop
         self.consume('WHILE')
         condition = self.parse_expression()
         self.consume('COLON')
@@ -149,7 +139,6 @@ class Parser:
         return ('while', condition, body)
 
     def parse_print(self):
-        # Parse a print statement
         self.consume('PRINT')
         self.consume('LPAREN')
         value = self.parse_expression()
@@ -157,14 +146,12 @@ class Parser:
         return ('print', value)
 
     def parse_block(self):
-        # Parse a block of statements
         statements = []
         while self.current_token and self.current_token[0] != 'NEWLINE' and self.current_token[0] != 'ELSE':
             statements.append(self.parse_statement())
         return statements
 
     def consume(self, token_type):
-        # Consume a token of the given type
         if self.current_token and self.current_token[0] == token_type:
             value = self.current_token[1]
             self.advance()
@@ -173,7 +160,6 @@ class Parser:
             self.error()
 
     def consume_value(self):
-        # Consume a value (number, identifier, string, or list)
         if self.current_token[0] == 'LBRACKET':
             self.consume('LBRACKET')
             elements = []
@@ -189,12 +175,10 @@ class Parser:
             self.error()
 
     def peek_next_token(self):
-        # Peek at the next token without consuming it
         if self.pos < len(self.tokens):
             return self.tokens[self.pos]
         else:
             return None
 
     def error(self):
-        # Raise a syntax error
         raise Exception(f'Invalid syntax at token {self.current_token}')

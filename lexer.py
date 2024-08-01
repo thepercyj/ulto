@@ -11,18 +11,18 @@ def tokenize(code):
     tokens = []
     token_specification = [
         ('NUMBER', r'\d+'),  # Integer
-        ('ASSIGN', r'='),  # Assignment 
+        ('ASSIGN', r'='),  # Assignment
         ('ID', r'[A-Za-z_][A-Za-z0-9_]*'),  # Identifiers
-        ('PLUS', r'\+'),  # Addition 
-        ('MINUS', r'-'),  # Subtraction 
-        ('TIMES', r'\*'),  # Multiplication 
-        ('OVER', r'/'),  # Division 
-        ('EQ', r'=='),  # Equality 
-        ('NEQ', r'!='),  # Not equal 
-        ('LT', r'<'),  # Less than 
-        ('GT', r'>'),  # Greater than 
-        ('LTE', r'<='),  # Less than or equal 
-        ('GTE', r'>='),  # Greater than or equal 
+        ('PLUS', r'\+'),  # Addition
+        ('MINUS', r'-'),  # Subtraction
+        ('TIMES', r'\*'),  # Multiplication
+        ('OVER', r'/'),  # Division
+        ('EQ', r'=='),  # Equality
+        ('NEQ', r'!='),  # Not equal
+        ('LT', r'<'),  # Less than
+        ('GT', r'>'),  # Greater than
+        ('LTE', r'<='),  # Less than or equal
+        ('GTE', r'>='),  # Greater than or equal
         ('LPAREN', r'\('),  # Left parenthesis
         ('RPAREN', r'\)'),  # Right parenthesis
         ('LBRACKET', r'\['),  # Left bracket

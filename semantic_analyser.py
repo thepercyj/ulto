@@ -1,3 +1,9 @@
+# Ulto - Imperative Reversible Programming Language
+#
+# semantic_analyser.py
+#
+# Aman Thapa Magar <at719@sussex.ac.uk>
+
 class SemanticAnalyser:
     def __init__(self, ast):
         self.ast = ast
@@ -5,20 +11,31 @@ class SemanticAnalyser:
 
     def analyse(self):
         for node in self.ast:
-            if node[0] == 'assign':
-                self.process_assignment(node)
-            elif node[0] == 'reverse':
-                self.process_reverse(node)
-            elif node[0] == 'if':
-                self.process_if(node)
-            else:
-                self.error(f'Unknown node type: {node[0]}')
+            self.analyse_node(node)
         print("Semantic analysis passed")
+
+    def analyse_node(self, node):
+        if node[0] == 'assign':
+            self.process_assignment(node)
+        elif node[0] == 'reverse':
+            self.process_reverse(node)
+        elif node[0] == 'if':
+            self.process_if(node)
+        elif node[0] == 'while':
+            self.process_while(node)
+        elif node[0] == 'print':
+            self.process_print(node)
+        elif node[0] == 'import':
+            self.process_import(node)
+        elif node[0] == 'class':
+            self.process_class(node)
+        else:
+            self.error(f'Unknown node type: {node[0]}')
 
     def process_assignment(self, node):
         _, var_name, value = node
         self.evaluate_expression(value)
-        self.symbol_table[var_name] = None
+        self.symbol_table[var_name] = None  # Mark the variable as declared
 
     def process_reverse(self, node):
         _, var_name = node
@@ -33,51 +50,42 @@ class SemanticAnalyser:
         for stmt in false_branch:
             self.analyse_node(stmt)
 
+    def process_while(self, node):
+        _, condition, body = node
+        self.evaluate_expression(condition)
+        for stmt in body:
+            self.analyse_node(stmt)
+
+    def process_print(self, node):
+        _, value = node
+        self.evaluate_expression(value)
+
+    def process_import(self, node):
+        _, module_name = node
+        # Handle imports as needed, e.g., importing Python standard library modules
+
+    def process_class(self, node):
+        _, class_name, methods = node
+        self.symbol_table[class_name] = {
+            'type': 'class',
+            'methods': {method[1]: method for method in methods}
+        }
+
     def evaluate_expression(self, expr):
-        if isinstance(expr, tuple):
+        if isinstance(expr, list):
+            for item in expr:
+                self.evaluate_expression(item)
+        elif isinstance(expr, tuple):
             left, op, right = expr
             self.evaluate_expression(left)
             self.evaluate_expression(right)
-        else:
-            if not isinstance(expr, int) and expr not in self.symbol_table:
+        elif isinstance(expr, str):
+            if expr.startswith('"') and expr.endswith('"'):
+                return  # It's a string literal
+            elif expr not in self.symbol_table:
                 self.error(f'Variable "{expr}" used before declaration')
-
-    def analyse_node(self, node):
-        if node[0] == 'assign':
-            self.process_assignment(node)
-        elif node[0] == 'reverse':
-            self.process_reverse(node)
-        elif node[0] == 'if':
-            self.process_if(node)
-        else:
-            self.error(f'Unknown node type: {node[0]}')
+        elif not isinstance(expr, int):
+            self.error(f'Invalid expression type: {type(expr)}')
 
     def error(self, message):
         raise Exception(f'Semantic error: {message}')
-
-
-if __name__ == '__main__':
-    from ulto_parser import Parser
-    from lexer import tokenize
-
-    code = """
-    assign x to 5
-    assign y to x plus 3
-    reverse y
-    assign z to x minus 2
-    assign w to x times 4
-    assign v to x over 2
-    if x == 5
-    assign a to 1
-    else
-    assign a to 2
-    endif
-    """
-
-    tokens = tokenize(code)
-    parser = Parser(tokens)
-    ast = parser.parse()
-    print(ast)
-
-    analyser = SemanticAnalyser(ast)
-    analyser.analyse()
