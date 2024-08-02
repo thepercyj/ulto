@@ -24,50 +24,35 @@ class ExecutionEngine:
         self.current_step = 0
 
     def execute(self):
-        # Start measuring energy usage
         start_time = time.time()
-        # energy_process = self.start_energy_measurement()
-
         try:
             for node in self.ast:
                 self.execute_node(node)
         finally:
             end_time = time.time()
-            # Stop measuring energy usage and calculate energy
-            # energy_used = self.stop_energy_measurement(energy_process, end_time - start_time)
-
             self.print_computation_cost()
             self.log_execution_details(start_time, end_time)
 
     def execute_node(self, node):
-        if node[0] == 'assign':
+        node_type = node[0]
+        if node_type == 'assign':
             self.execute_assignment(node)
-        elif node[0] == 'reverse':
+        elif node_type == 'reverse':
             self.execute_reverse(node)
-        elif node[0] == 'if':
+        elif node_type == 'if':
             self.execute_if(node)
-        elif node[0] == 'while':
+        elif node_type == 'while':
             self.execute_while(node)
-        elif node[0] == 'print':
+        elif node_type == 'print':
             self.execute_print(node)
-        elif node[0] == 'import':
-            self.execute_import(node)
-        elif node[0] == 'class':
-            self.execute_class(node)
-        elif node[0] == 'function':
-            self.execute_function(node)
-        elif node[0] == 'return':
-            pass
         else:
-            self.error(f'Unknown node type: {node[0]}')
+            self.error(f'Unknown node type: {node_type}')
 
     def execute_assignment(self, node):
         self.assignments += 1
         _, var_name, value = node
         evaluated_value = self.evaluate_expression(value)
         previous_value = self.symbol_table.get(var_name, None)
-        if var_name not in self.symbol_table:
-            self.symbol_table[var_name] = None
         self.history.append((var_name, previous_value))
         self.detailed_history.append((var_name, previous_value, evaluated_value, self.current_step))
         self.symbol_table[var_name] = evaluated_value
@@ -76,12 +61,9 @@ class ExecutionEngine:
     def execute_if(self, node):
         _, condition, true_branch, false_branch = node
         condition_result = self.evaluate_expression(condition)
-        if condition_result:
-            for stmt in true_branch:
-                self.execute_node(stmt)
-        else:
-            for stmt in false_branch:
-                self.execute_node(stmt)
+        branch = true_branch if condition_result else false_branch
+        for stmt in branch:
+            self.execute_node(stmt)
 
     def execute_while(self, node):
         _, condition, body = node
@@ -99,52 +81,46 @@ class ExecutionEngine:
         if isinstance(expr, list):
             return [self.evaluate_expression(item) for item in expr]
         elif isinstance(expr, tuple) and len(expr) == 3:
-            left = self.evaluate_expression(expr[0])
-            op = expr[1]
-            right = self.evaluate_expression(expr[2])
-            if op == 'plus':
-                result = left + right
-            elif op == 'minus':
-                result = left - right
-            elif op == 'times':
-                result = left * right
-            elif op == 'over':
-                result = left / right
-            elif op == 'eq':
-                result = left == right
-            elif op == 'neq':
-                result = left != right
-            elif op == 'lt':
-                result = left < right
-            elif op == 'gt':
-                result = left > right
-            elif op == 'lte':
-                result = left <= right
-            elif op == 'gte':
-                result = left >= right
-            else:
-                self.error(f'Unknown operator: {op}')
-            return result
+            left, op, right = expr
+            left_val = self.evaluate_expression(left)
+            right_val = self.evaluate_expression(right)
+            return self.apply_operator(op, left_val, right_val)
         elif isinstance(expr, int):
             return expr
         elif isinstance(expr, str):
-            if expr.startswith('"') and expr.endswith('"'):
-                return expr[1:-1]
-            elif expr in self.symbol_table:
-                return self.symbol_table[expr]
-            else:
-                self.error(f'Undefined variable or non-numeric value: {expr}')
+            return self.symbol_table.get(expr, expr[1:-1] if expr.startswith('"') and expr.endswith('"') else None)
         return expr
+
+    def apply_operator(self, op, left, right):
+        if op == 'plus':
+            return left + right
+        elif op == 'minus':
+            return left - right
+        elif op == 'times':
+            return left * right
+        elif op == 'over':
+            return left / right
+        elif op == 'eq':
+            return left == right
+        elif op == 'neq':
+            return left != right
+        elif op == 'lt':
+            return left < right
+        elif op == 'gt':
+            return left > right
+        elif op == 'lte':
+            return left <= right
+        elif op == 'gte':
+            return left >= right
+        else:
+            self.error(f'Unknown operator: {op}')
 
     def execute_reverse(self, node):
         self.reversals += 1
         _, var_name = node
         previous_value = self.find_previous_value(var_name)
-        if previous_value is not None or var_name in self.symbol_table:
-            self.history.append((var_name, self.symbol_table[var_name]))
-            self.symbol_table[var_name] = previous_value
-        else:
-            self.error(f'No previous value found for variable "{var_name}"')
+        self.history.append((var_name, self.symbol_table[var_name]))
+        self.symbol_table[var_name] = previous_value
 
     def find_previous_value(self, var_name):
         for var, value in reversed(self.history):

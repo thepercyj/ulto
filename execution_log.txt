@@ -56,3 +56,19 @@ Evaluations: 7985
 Reversals: 0
 Memory Usage: 365544 bytes
 
+Execution Details (2024-08-02 15:13:46.441489):
+Execution Time: 0.06619119644165039 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 7985
+Reversals: 0
+Memory Usage: 365544 bytes
+
+Execution Details (2024-08-02 15:14:34.723190):
+Execution Time: 0.04847407341003418 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 7985
+Reversals: 0
+Memory Usage: 365544 bytes
+
