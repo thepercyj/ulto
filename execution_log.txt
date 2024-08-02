@@ -1,50 +1,58 @@
-Execution Details (2024-06-06 00:45:31.236298):
-Execution Time: 0.0 seconds
+Execution Details (2024-08-02 14:45:22.596446):
+Execution Time: 0.5449278354644775 seconds
 Number of Threads Used: 1
-Assignments: 2
-Evaluations: 4
-Reversals: 1
-Memory Usage: 576 bytes
-
-Execution Details (2024-06-06 01:12:14.115692):
-Execution Time: 0.0 seconds
-Number of Threads Used: 1
-Assignments: 6
-Evaluations: 17
-Reversals: 1
-Memory Usage: 1268 bytes
-
-Execution Details (2024-06-06 01:15:45.764726):
-Execution Time: 0.0 seconds
-Number of Threads Used: 1
-Assignments: 7
-Evaluations: 18
-Reversals: 2
-Memory Usage: 1324 bytes
-
-Execution Details (2024-07-23 16:40:13.532036):
-Execution Time: 0.0 seconds
-Number of Threads Used: 1
-Assignments: 7
-Evaluations: 18
-Reversals: 2
-Memory Usage: 1324 bytes
-
-Execution Details (2024-08-01 15:29:01.018089):
-Execution Time: 0.027856826782226562 seconds
-Number of Threads Used: 1
-Assignments: 46
-Evaluations: 145
+Assignments: 996
+Evaluations: 3185
 Reversals: 0
-Energy Cost: 336 units
-Memory Usage: 3980 bytes
+Energy Consumed: 8.55 joules
+Memory Usage: 147700 bytes
 
-Execution Details (2024-08-01 15:30:53.680754):
-Execution Time: 0.02430415153503418 seconds
+Execution Details (2024-08-02 14:47:04.624174):
+Execution Time: 6.78569221496582 seconds
 Number of Threads Used: 1
-Assignments: 46
-Evaluations: 145
+Assignments: 2496
+Evaluations: 7985
 Reversals: 0
-Energy Cost: 336 units
-Memory Usage: 3980 bytes
+Energy Consumed: 8.55 joules
+Memory Usage: 365544 bytes
+
+Execution Details (2024-08-02 14:53:36.597052):
+Execution Time: 10.886794090270996 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 7985
+Reversals: 0
+Memory Usage: 365544 bytes
+
+Execution Details (2024-08-02 14:54:07.117054):
+Execution Time: 8.589678764343262 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 7985
+Reversals: 0
+Memory Usage: 365544 bytes
+
+Execution Details (2024-08-02 14:56:22.102204):
+Execution Time: 4.114948749542236 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 7985
+Reversals: 0
+Memory Usage: 365544 bytes
+
+Execution Details (2024-08-02 14:58:07.842116):
+Execution Time: 0.09043145179748535 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 7985
+Reversals: 0
+Memory Usage: 365544 bytes
+
+Execution Details (2024-08-02 14:59:04.543174):
+Execution Time: 0.06745529174804688 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 7985
+Reversals: 0
+Memory Usage: 365544 bytes
 

@@ -9,34 +9,35 @@ import sys
 import time
 import threading
 from datetime import datetime
+import subprocess
+
 
 class ExecutionEngine:
     def __init__(self, ast, symbol_table):
         self.ast = ast
         self.symbol_table = symbol_table
         self.history = []
+        self.detailed_history = []
         self.assignments = 0
         self.evaluations = 0
         self.reversals = 0
-        self.energy_cost = 0
-
-        # Define costs for operations
-        self.costs = {
-            'assignment': 1,  # Energy cost for assignment
-            'evaluation': 2,  # Energy cost for evaluation
-            'reversal': 3,  # Energy cost for reversal
-            'function_call': 5,  # Energy cost for function call
-        }
+        self.current_step = 0
 
     def execute(self):
+        # Start measuring energy usage
         start_time = time.time()
-        for node in self.ast:
-            self.execute_node(node)
-        end_time = time.time()
-        print("Execution finished")
-        print("Final state of variables:", self.symbol_table)
-        self.print_computation_cost()
-        self.log_execution_details(start_time, end_time)
+        # energy_process = self.start_energy_measurement()
+
+        try:
+            for node in self.ast:
+                self.execute_node(node)
+        finally:
+            end_time = time.time()
+            # Stop measuring energy usage and calculate energy
+            # energy_used = self.stop_energy_measurement(energy_process, end_time - start_time)
+
+            self.print_computation_cost()
+            self.log_execution_details(start_time, end_time)
 
     def execute_node(self, node):
         if node[0] == 'assign':
@@ -56,22 +57,21 @@ class ExecutionEngine:
         elif node[0] == 'function':
             self.execute_function(node)
         elif node[0] == 'return':
-            pass  # Handle return if necessary in function execution
+            pass
         else:
             self.error(f'Unknown node type: {node[0]}')
 
     def execute_assignment(self, node):
         self.assignments += 1
-        self.energy_cost += self.costs['assignment']
         _, var_name, value = node
         evaluated_value = self.evaluate_expression(value)
-        print(f"Evaluated value of {var_name}: {evaluated_value}")
         previous_value = self.symbol_table.get(var_name, None)
         if var_name not in self.symbol_table:
-            self.symbol_table[var_name] = None  # Initialize if not present
+            self.symbol_table[var_name] = None
         self.history.append((var_name, previous_value))
+        self.detailed_history.append((var_name, previous_value, evaluated_value, self.current_step))
         self.symbol_table[var_name] = evaluated_value
-        print(f"Updated value of {var_name}: {self.symbol_table[var_name]}")
+        self.current_step += 1
 
     def execute_if(self, node):
         _, condition, true_branch, false_branch = node
@@ -96,7 +96,6 @@ class ExecutionEngine:
 
     def evaluate_expression(self, expr):
         self.evaluations += 1
-        self.energy_cost += self.costs['evaluation']
         if isinstance(expr, list):
             return [self.evaluate_expression(item) for item in expr]
         elif isinstance(expr, tuple) and len(expr) == 3:
@@ -125,13 +124,12 @@ class ExecutionEngine:
                 result = left >= right
             else:
                 self.error(f'Unknown operator: {op}')
-            print(f"Evaluating: {left} {op} {right} = {result}")
             return result
         elif isinstance(expr, int):
             return expr
         elif isinstance(expr, str):
             if expr.startswith('"') and expr.endswith('"'):
-                return expr[1:-1]  # Return the string literal without quotes
+                return expr[1:-1]
             elif expr in self.symbol_table:
                 return self.symbol_table[expr]
             else:
@@ -140,30 +138,89 @@ class ExecutionEngine:
 
     def execute_reverse(self, node):
         self.reversals += 1
-        self.energy_cost += self.costs['reversal']
         _, var_name = node
         previous_value = self.find_previous_value(var_name)
-        print(f"Previous value of {var_name}: {previous_value}")  # Debug statement
         if previous_value is not None or var_name in self.symbol_table:
             self.history.append((var_name, self.symbol_table[var_name]))
             self.symbol_table[var_name] = previous_value
-            print(f"Reversed value of {var_name}: {self.symbol_table[var_name]}")
         else:
             self.error(f'No previous value found for variable "{var_name}"')
 
     def find_previous_value(self, var_name):
-        print(f"Finding previous value for {var_name}")  # Debug statement
         for var, value in reversed(self.history):
             if var == var_name:
-                print(f"Previous value found: {value}")  # Debug statement
-                self.history.remove((var, value))  # Remove the found value
+                self.history.remove((var, value))
                 return value
         return None
 
+    def trace_back(self, var_name):
+        steps = []
+        for var, prev_val, new_val, step in reversed(self.detailed_history):
+            if var == var_name:
+                steps.append((var, new_val, prev_val, step))
+        return steps
+
+    def navigate_to_step(self, step):
+        if step < 0 or step >= len(self.detailed_history):
+            print("Invalid step")
+            return
+        for var, prev_val, new_val, s in self.detailed_history:
+            if s == step:
+                self.symbol_table[var] = new_val
+
+    # def start_energy_measurement(self):
+    #     power_log_path = "C:\\Program Files\\Intel\\Power Gadget 3.6\\PowerLog3.0.exe"
+    #     output_csv_path = "C:\\Users\\amany\\Documents\\PwrData.csv"
+    #
+    #     # Start the PowerLog process with the -cmd flag
+    #     process = subprocess.Popen([power_log_path, '-file', output_csv_path, '-cmd'], stdout=subprocess.PIPE)
+    #     return process
+
+    # def stop_energy_measurement(self, process, duration):
+    #     # Calculate the duration for the PowerLog process
+    #     duration_str = f"{int(duration)}s"
+    #
+    #     # Stop the PowerLog process after the duration
+    #     time.sleep(duration)
+    #     process.terminate()
+    #     process.wait()
+    #
+    #     output_csv_path = "C:\\Users\\amany\\Documents\\PwrData.csv"
+    #     with open(output_csv_path, "r") as file:
+    #         lines = file.readlines()
+    #
+    #     # Ensure there are enough lines in the CSV file
+    #     if len(lines) < 3:
+    #         raise Exception("Not enough data in the CSV file to calculate energy usage.")
+    #
+    #     # Find the index of the "Cumulative IA Energy_0 (Joules)" column
+    #     header = lines[0].strip().split(',')
+    #     try:
+    #         energy_index = header.index('Cumulative IA Energy_0(Joules)')
+    #     except ValueError:
+    #         raise Exception("Cumulative IA Energy_0(Joules) column not found in CSV header.")
+    #
+    #     # Extract the energy usage from the first and last relevant entries
+    #     start_energy = None
+    #     end_energy = None
+    #
+    #     for line in lines[1:]:
+    #         if len(line.strip().split(',')) > energy_index:
+    #             start_energy = float(line.strip().split(',')[energy_index])
+    #             break
+    #
+    #     for line in reversed(lines[:-1]):  # Skip the summary line
+    #         if len(line.strip().split(',')) > energy_index:
+    #             end_energy = float(line.strip().split(',')[energy_index])
+    #             break
+    #
+    #     if start_energy is None or end_energy is None:
+    #         raise Exception("Unable to determine start or end energy usage from CSV data.")
+    #
+    #     return end_energy - start_energy
+
     def execute_import(self, node):
         _, module_name = node
-        # Implement import logic as needed
-        print(f"Imported module: {module_name}")
 
     def execute_class(self, node):
         _, class_name, methods = node
@@ -171,12 +228,9 @@ class ExecutionEngine:
             'type': 'class',
             'methods': {method[1]: method for method in methods}
         }
-        print(f"Defined class: {class_name}")
 
     def execute_function(self, node):
         _, func_name, params, body = node
-        # Implement function execution logic as needed
-        print(f"Defined function: {func_name}")
 
     def error(self, message):
         raise Exception(f'Execution error: {message}')
@@ -186,18 +240,20 @@ class ExecutionEngine:
         print(f"Assignments: {self.assignments}")
         print(f"Evaluations: {self.evaluations}")
         print(f"Reversals: {self.reversals}")
-        print(f"Energy Cost: {self.energy_cost} units")
         memory_usage = self.get_memory_usage()
         print(f"Memory Usage: {memory_usage} bytes")
 
     def get_memory_usage(self):
         symbol_table_size = sys.getsizeof(self.symbol_table)
         history_size = sys.getsizeof(self.history)
-        total_size = symbol_table_size + history_size
+        detailed_history_size = sys.getsizeof(self.detailed_history)
+        total_size = symbol_table_size + history_size + detailed_history_size
         for key, value in self.symbol_table.items():
             total_size += sys.getsizeof(key)
             total_size += sys.getsizeof(value)
         for entry in self.history:
+            total_size += sys.getsizeof(entry)
+        for entry in self.detailed_history:
             total_size += sys.getsizeof(entry)
         return total_size
 
@@ -211,7 +267,9 @@ class ExecutionEngine:
             log_file.write(f"Assignments: {self.assignments}\n")
             log_file.write(f"Evaluations: {self.evaluations}\n")
             log_file.write(f"Reversals: {self.reversals}\n")
-            log_file.write(f"Energy Cost: {self.energy_cost} units\n")
+            # log_file.write(f"Energy Consumed: {energy_used:.2f} joules\n")
             log_file.write(f"Memory Usage: {self.get_memory_usage()} bytes\n")
             log_file.write("\n")
+
+
 

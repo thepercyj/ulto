@@ -3,7 +3,7 @@ b = 1
 fib = a
 rev_history = []
 
-n = 10
+n = 500
 i = 2
 
 if n > 1:
