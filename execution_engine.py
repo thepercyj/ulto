@@ -9,7 +9,7 @@ import sys
 import time
 import threading
 from datetime import datetime
-import subprocess
+from malloc import MemoryManager
 
 
 class ExecutionEngine:
@@ -22,6 +22,7 @@ class ExecutionEngine:
         self.evaluations = 0
         self.reversals = 0
         self.current_step = 0
+        self.memory_manager = MemoryManager(50)  # 50 MB limit
 
     def execute(self):
         start_time = time.time()
@@ -53,6 +54,16 @@ class ExecutionEngine:
         _, var_name, value = node
         evaluated_value = self.evaluate_expression(value)
         previous_value = self.symbol_table.get(var_name, None)
+
+        # Estimate memory usage and manage it
+        size = sys.getsizeof(evaluated_value)
+        self.memory_manager.allocate(size)
+
+        # Deallocate memory for the previous value
+        if previous_value is not None:
+            prev_size = sys.getsizeof(previous_value)
+            self.memory_manager.deallocate(prev_size)
+
         self.history.append((var_name, previous_value))
         self.detailed_history.append((var_name, previous_value, evaluated_value, self.current_step))
         self.symbol_table[var_name] = evaluated_value
@@ -119,8 +130,15 @@ class ExecutionEngine:
         self.reversals += 1
         _, var_name = node
         previous_value = self.find_previous_value(var_name)
-        self.history.append((var_name, self.symbol_table[var_name]))
-        self.symbol_table[var_name] = previous_value
+        if previous_value is not None:
+            self.history.append((var_name, self.symbol_table[var_name]))
+            self.symbol_table[var_name] = previous_value
+
+            # Estimate memory usage for reverse operation
+            current_size = sys.getsizeof(self.symbol_table[var_name])
+            prev_size = sys.getsizeof(previous_value)
+            self.memory_manager.deallocate(current_size)
+            self.memory_manager.allocate(prev_size)
 
     def find_previous_value(self, var_name):
         for var, value in reversed(self.history):
@@ -144,57 +162,6 @@ class ExecutionEngine:
             if s == step:
                 self.symbol_table[var] = new_val
 
-    # def start_energy_measurement(self):
-    #     power_log_path = "C:\\Program Files\\Intel\\Power Gadget 3.6\\PowerLog3.0.exe"
-    #     output_csv_path = "C:\\Users\\amany\\Documents\\PwrData.csv"
-    #
-    #     # Start the PowerLog process with the -cmd flag
-    #     process = subprocess.Popen([power_log_path, '-file', output_csv_path, '-cmd'], stdout=subprocess.PIPE)
-    #     return process
-
-    # def stop_energy_measurement(self, process, duration):
-    #     # Calculate the duration for the PowerLog process
-    #     duration_str = f"{int(duration)}s"
-    #
-    #     # Stop the PowerLog process after the duration
-    #     time.sleep(duration)
-    #     process.terminate()
-    #     process.wait()
-    #
-    #     output_csv_path = "C:\\Users\\amany\\Documents\\PwrData.csv"
-    #     with open(output_csv_path, "r") as file:
-    #         lines = file.readlines()
-    #
-    #     # Ensure there are enough lines in the CSV file
-    #     if len(lines) < 3:
-    #         raise Exception("Not enough data in the CSV file to calculate energy usage.")
-    #
-    #     # Find the index of the "Cumulative IA Energy_0 (Joules)" column
-    #     header = lines[0].strip().split(',')
-    #     try:
-    #         energy_index = header.index('Cumulative IA Energy_0(Joules)')
-    #     except ValueError:
-    #         raise Exception("Cumulative IA Energy_0(Joules) column not found in CSV header.")
-    #
-    #     # Extract the energy usage from the first and last relevant entries
-    #     start_energy = None
-    #     end_energy = None
-    #
-    #     for line in lines[1:]:
-    #         if len(line.strip().split(',')) > energy_index:
-    #             start_energy = float(line.strip().split(',')[energy_index])
-    #             break
-    #
-    #     for line in reversed(lines[:-1]):  # Skip the summary line
-    #         if len(line.strip().split(',')) > energy_index:
-    #             end_energy = float(line.strip().split(',')[energy_index])
-    #             break
-    #
-    #     if start_energy is None or end_energy is None:
-    #         raise Exception("Unable to determine start or end energy usage from CSV data.")
-    #
-    #     return end_energy - start_energy
-
     def execute_import(self, node):
         _, module_name = node
 
@@ -217,7 +184,7 @@ class ExecutionEngine:
         print(f"Evaluations: {self.evaluations}")
         print(f"Reversals: {self.reversals}")
         memory_usage = self.get_memory_usage()
-        print(f"Memory Usage: {memory_usage} bytes")
+        print(f"Memory Usage: {memory_usage:.2f} MB")
 
     def get_memory_usage(self):
         symbol_table_size = sys.getsizeof(self.symbol_table)
@@ -231,7 +198,10 @@ class ExecutionEngine:
             total_size += sys.getsizeof(entry)
         for entry in self.detailed_history:
             total_size += sys.getsizeof(entry)
-        return total_size
+
+        # Converting to MB
+        total_size_mb = total_size / (1024 * 1024)
+        return total_size_mb
 
     def log_execution_details(self, start_time, end_time):
         num_threads = threading.active_count()
@@ -243,8 +213,7 @@ class ExecutionEngine:
             log_file.write(f"Assignments: {self.assignments}\n")
             log_file.write(f"Evaluations: {self.evaluations}\n")
             log_file.write(f"Reversals: {self.reversals}\n")
-            # log_file.write(f"Energy Consumed: {energy_used:.2f} joules\n")
-            log_file.write(f"Memory Usage: {self.get_memory_usage()} bytes\n")
+            log_file.write(f"Memory Usage: {self.get_memory_usage():.2f} MB\n")
             log_file.write("\n")
 
 

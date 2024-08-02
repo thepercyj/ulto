@@ -12,7 +12,6 @@ class SemanticAnalyser:
     def analyse(self):
         for node in self.ast:
             self.analyse_node(node)
-        print("Semantic analysis passed")
 
     def analyse_node(self, node):
         if node[0] == 'assign':
@@ -35,7 +34,7 @@ class SemanticAnalyser:
     def process_assignment(self, node):
         _, var_name, value = node
         self.evaluate_expression(value)
-        self.symbol_table[var_name] = None  # Mark the variable as declared
+        self.symbol_table[var_name] = None
 
     def process_reverse(self, node):
         _, var_name = node
@@ -62,7 +61,6 @@ class SemanticAnalyser:
 
     def process_import(self, node):
         _, module_name = node
-        # Handle imports as needed, e.g., importing Python standard library modules
 
     def process_class(self, node):
         _, class_name, methods = node
