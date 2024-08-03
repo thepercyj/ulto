@@ -6,3 +6,147 @@ Evaluations: 7985
 Reversals: 0
 Memory Usage: 0.35 MB
 
+Execution Details (2024-08-02 15:39:40.411502):
+Execution Time: 0.07653498649597168 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 7985
+Reversals: 0
+Memory Usage: 0.35 MB
+
+Execution Details (2024-08-02 15:41:11.938454):
+Execution Time: 0.11420369148254395 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 7985
+Reversals: 0
+Memory Usage: 0.35 MB
+
+Execution Details (2024-08-02 22:06:32.641050):
+Execution Time: 0.7127034664154053 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.3448028564453125 MB
+
+Execution Details (2024-08-02 22:07:05.977011):
+Execution Time: 0.7262997627258301 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.3448028564453125 MB
+
+Execution Details (2024-08-02 22:07:16.301243):
+Execution Time: 0.749596118927002 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.3448028564453125 MB
+
+Execution Details (2024-08-02 22:08:16.982171):
+Execution Time: 0.715092658996582 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.3448028564453125 MB
+
+Execution Details (2024-08-02 22:15:35.256445):
+Execution Time: 0.741351842880249 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.3448028564453125 MB
+
+Execution Details (2024-08-02 22:15:50.793974):
+Execution Time: 0.745030403137207 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.3448028564453125 MB
+
+Execution Details (2024-08-02 22:15:56.871851):
+Execution Time: 0.747645378112793 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.3448028564453125 MB
+
+Execution Details (2024-08-02 22:19:01.302415):
+Execution Time: 0.7686457633972168 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 7985
+Reversals: 0
+Memory Usage: 0.34860992431640625 MB
+
+Execution Details (2024-08-02 22:19:20.378415):
+Execution Time: 0.7334673404693604 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 7985
+Reversals: 0
+Memory Usage: 0.34860992431640625 MB
+
+Execution Details (2024-08-02 22:21:31.183212):
+Execution Time: 0.10274887084960938 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 7985
+Reversals: 0
+Memory Usage: 0.35 MB
+
+Execution Details (2024-08-02 22:23:22.602039):
+Execution Time: 0.08441734313964844 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.3448028564453125 MB
+
+Execution Details (2024-08-02 23:47:14.355121):
+Execution Time: 0.06659555435180664 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.3448028564453125 MB
+
+Execution Details (2024-08-03 00:23:13.105583):
+Execution Time: 0.09912323951721191 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.344818115234375 MB
+
+Execution Details (2024-08-03 00:23:34.983307):
+Execution Time: 0.09803009033203125 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.344818115234375 MB
+
+Execution Details (2024-08-03 00:23:58.854947):
+Execution Time: 0.07106328010559082 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.344818115234375 MB
+
+Execution Details (2024-08-03 00:24:08.177109):
+Execution Time: 0.032892465591430664 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.344818115234375 MB
+

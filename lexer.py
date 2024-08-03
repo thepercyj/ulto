@@ -7,7 +7,15 @@
 import re
 
 def tokenize(code):
-    # here we define all the operators and keywords to be tokenize for the language.
+    """
+    Tokenizes the given code into a list of tokens.
+
+    Args:
+    code (str): The source code to be tokenized.
+
+    Returns:
+    list: A list of tokens.
+    """
     tokens = []
     token_specification = [
         ('NUMBER', r'\d+'),  # Integer
@@ -28,19 +36,19 @@ def tokenize(code):
         ('LBRACKET', r'\['),  # Left bracket
         ('RBRACKET', r'\]'),  # Right bracket
         ('COLON', r':'),  # Colon
-        ('DEF', r'def'),  # Function definition keyword
-        ('CLASS', r'class'),  # Class definition keyword
+        ('DEF', r'def'),  # Function keyword
+        ('CLASS', r'class'),  # Class keyword
         ('RETURN', r'return'),  # Return keyword
         ('IF', r'if'),  # If keyword
         ('ELSE', r'else'),  # Else keyword
         ('WHILE', r'while'),  # While keyword
         ('PRINT', r'print'),  # Print keyword
-        ('NEW', r'new'),  # Keyword for creating new instances
+        ('NEW', r'new'),  # Keyword for new instances
         ('REV', r'rev'),  # Reverse keyword
         ('STRING', r'"[^"]*"'),  # String literal
         ('COMMA', r','),  # Comma for parameter separation
-        ('SKIP', r'[ \t]+'),  # Skip over spaces and tabs
-        ('NEWLINE', r'\n'),  # Line endings
+        ('SKIP', r'[ \t]+'),  # Skip over spaces / tabs
+        ('NEWLINE', r'\n'),  # Line end
         ('MISMATCH', r'.'),  # Any other character
     ]
     tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
@@ -54,6 +62,7 @@ def tokenize(code):
             value = int(value)
         elif kind == 'STRING':
             value = value[1:-1]
+        # treating them as reserved keywords for the language.
         elif kind == 'ID' and value in ('class', 'def', 'return', 'new', 'if', 'else', 'while', 'print', 'rev'):
             kind = value.upper()
         elif kind == 'NEWLINE':

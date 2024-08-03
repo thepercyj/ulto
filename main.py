@@ -4,7 +4,6 @@
 #
 # Aman Thapa Magar <at719@sussex.ac.uk>
 
-
 import sys
 from lexer import tokenize
 from ulto_parser import Parser
@@ -13,6 +12,12 @@ from semantic_analyser import SemanticAnalyser
 
 
 def main(filename):
+    """
+    Main function to run the Ulto program.
+
+    Args:
+    filename (str): The name of the Ulto file to be executed.
+    """
     with open(filename, 'r') as file:
         code = file.read()
 
@@ -24,7 +29,7 @@ def main(filename):
     analyser = SemanticAnalyser(ast)
     analyser.analyse()
 
-    engine = ExecutionEngine(ast, analyser.symbol_table)
+    engine = ExecutionEngine(ast)
     engine.execute()
 
 
