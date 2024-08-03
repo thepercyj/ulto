@@ -8,9 +8,9 @@ import sys
 import time
 import threading
 from datetime import datetime
-from core.malloc import MemoryManager
-from core.lazyeval import LazyEval
-from core.logstack import LogStack
+from src.core.malloc import MemoryManager
+from src.core.lazyeval import LazyEval
+from src.core.logstack import LogStack
 from sortedcontainers import SortedDict
 
 

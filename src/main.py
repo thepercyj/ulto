@@ -5,19 +5,25 @@
 # Aman Thapa Magar <at719@sussex.ac.uk>
 
 import sys
-from lexer import tokenize
-from ulto_parser import Parser
-from execution_engine import ExecutionEngine
-from semantic_analyser import SemanticAnalyser
+from src.lexer import tokenize
+from src.ulto_parser import Parser
+from src.execution_engine import ExecutionEngine
+from src.semantic_analyser import SemanticAnalyser
 
 
-def main(filename):
+def main():
     """
     Main function to run the Ulto program.
-
-    Args:
-    filename (str): The name of the Ulto file to be executed.
     """
+    if len(sys.argv) != 2:
+        print("Usage: ulto <filename>.ul")
+        sys.exit(1)
+
+    filename = sys.argv[1]
+    if not filename.endswith('.ul'):
+        print("Error: The file must have a .ul extension")
+        sys.exit(1)
+
     with open(filename, 'r') as file:
         code = file.read()
 
@@ -34,13 +40,4 @@ def main(filename):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("Usage: ulto <filename>.ul")
-        sys.exit(1)
-
-    filename = sys.argv[1]
-    if not filename.endswith('.ul'):
-        print("Error: The file must have a .ul extension")
-        sys.exit(1)
-
-    main(filename)
+    main()
