@@ -1,3 +1,5 @@
+~~~~~~~ Before Malloc and LazyEval ~~~~~~~~~
+
 Execution Details (2024-08-02 15:30:38.592403):
 Execution Time: 0.0881798267364502 seconds
 Number of Threads Used: 1
@@ -21,6 +23,8 @@ Assignments: 2496
 Evaluations: 7985
 Reversals: 0
 Memory Usage: 0.35 MB
+
+~~~~~~~ After Malloc and LazyEval ~~~~~~~~~
 
 Execution Details (2024-08-02 22:06:32.641050):
 Execution Time: 0.7127034664154053 seconds
@@ -94,6 +98,8 @@ Evaluations: 7985
 Reversals: 0
 Memory Usage: 0.34860992431640625 MB
 
+~~~~ Batch Profiling, Memory Pooling, Inline Interpreter Optimisation ~~~~~~~~~
+
 Execution Details (2024-08-02 22:21:31.183212):
 Execution Time: 0.10274887084960938 seconds
 Number of Threads Used: 1
@@ -149,4 +155,22 @@ Assignments: 2496
 Evaluations: 5992
 Reversals: 0
 Memory Usage: 0.344818115234375 MB
+
+Execution Details (2024-08-03 10:29:02.444935):
+Execution Time: 0.021917343139648438 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.3448152542114258 MB
+
+~~~~~~~~~ After Logstack with Prune Operations Implementation ~~~~~~~~~~
+
+Execution Details (2024-08-03 11:26:26.563407):
+Execution Time: 0.021305084228515625 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.0009584426879882812 MB
 

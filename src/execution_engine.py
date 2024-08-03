@@ -8,9 +8,11 @@ import sys
 import time
 import threading
 from datetime import datetime
-from malloc import MemoryManager
-from lazyeval import LazyEval
+from core.malloc import MemoryManager
+from core.lazyeval import LazyEval
+from core.logstack import LogStack
 from sortedcontainers import SortedDict
+
 
 class ExecutionEngine:
     def __init__(self, ast):
@@ -34,6 +36,7 @@ class ExecutionEngine:
         self.profiling_data = {}
         self.profile_batch_size = 250
         self.profile_counter = 0
+        self.logstack = LogStack()
 
     def execute(self):
         """
@@ -47,6 +50,7 @@ class ExecutionEngine:
             self.detect_eager_vars()
             for node in self.ast:
                 self.execute_node(node)
+                self.prune_logstack()
         finally:
             end_time = time.time()
             self.print_computation_cost()
@@ -222,10 +226,8 @@ class ExecutionEngine:
             prev_size = sys.getsizeof(previous_value)
             self.memory_manager.deallocate(prev_size)
 
-        self.history.append((var_name, previous_value))
-        self.detailed_history.append((var_name, previous_value, lazy_value, self.current_step))
+        self.logstack.push(var_name, previous_value)
         self.symbol_table[var_name] = lazy_value
-        self.current_step += 1
 
     def execute_if(self, node):
         """
@@ -336,9 +338,8 @@ class ExecutionEngine:
         """
         self.reversals += 1
         _, var_name = node
-        previous_value = self.find_previous_value(var_name)
+        previous_value = self.logstack.pop(var_name)
         if previous_value is not None:
-            self.history.append((var_name, self.symbol_table[var_name]))
             self.symbol_table[var_name] = previous_value
 
             # memory estimation required since, reversal keeps track of history consuming space.
@@ -403,6 +404,11 @@ class ExecutionEngine:
         """
         raise Exception(f'Execution error: {message}')
 
+    def prune_logstack(self):
+        self.logstack.prune()
+        if self.logstack.get_memory_usage() > 50:
+            print("Warning: Memory usage exceeded 50 MB")
+
     def print_computation_cost(self):
         """
         Prints the computation cost of the execution.
@@ -422,23 +428,11 @@ class ExecutionEngine:
         float: The memory usage in megabytes.
         """
         symbol_table_size = sys.getsizeof(self.symbol_table)
-        history_size = sys.getsizeof(self.history)
-        detailed_history_size = sys.getsizeof(self.detailed_history)
-        total_size = symbol_table_size + history_size + detailed_history_size
-
+        total_size = symbol_table_size
         for key, value in self.symbol_table.items():
             total_size += sys.getsizeof(key)
             total_size += sys.getsizeof(value)
-
-        for entry in self.history:
-            total_size += sys.getsizeof(entry)
-
-        for entry in self.detailed_history:
-            total_size += sys.getsizeof(entry)
-
-        # Convert bytes to megabytes
-        total_size_mb = total_size / (1024 * 1024)
-        return total_size_mb
+        return total_size / (1024 * 1024)
 
     def log_execution_details(self, start_time, end_time):
         """
@@ -450,7 +444,7 @@ class ExecutionEngine:
         """
         num_threads = threading.active_count()
         execution_time = end_time - start_time
-        with open("execution_log.txt", "a") as log_file:
+        with open("../execution_log.txt", "a") as log_file:
             log_file.write(f"Execution Details ({datetime.now()}):\n")
             log_file.write(f"Execution Time: {execution_time} seconds\n")
             log_file.write(f"Number of Threads Used: {num_threads}\n")

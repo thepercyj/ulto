@@ -1,7 +1,7 @@
 a = 0
 b = 1
 fib = a
-rev_history = []
+fib_list = []
 
 n = 500
 i = 2
@@ -17,5 +17,5 @@ while i < n:
     print(fib)
     a = b
     b = fib
-    rev_history = [b] + rev_history
+    fib_list = [b] + fib_list
     i += 1
