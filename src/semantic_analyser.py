@@ -195,11 +195,13 @@ class SemanticAnalyser:
             self.evaluate_expression(left)
             self.evaluate_expression(right)
         elif isinstance(expr, str):
-            # if its a string literal then deal with it based on " ".
-            if expr.startswith('"') and expr.endswith('"'):
+            # Skip string literals and backtick-enclosed comments
+            if expr.startswith('`') and expr.endswith('`'):
                 return
-            elif expr not in self.symbol_table:
-                self.error(f'Variable "{expr}" used before declaration')
+            if isinstance(expr, str) and expr.isnumeric() is False and (
+                    expr.startswith('"') and expr.endswith('"')) == False:
+                if expr not in self.symbol_table:
+                    self.error(f'Variable "{expr}" used before declaration')
         elif not isinstance(expr, int):
             self.error(f'Invalid expression type: {type(expr)}')
 

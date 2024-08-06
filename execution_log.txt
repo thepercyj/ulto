@@ -174,3 +174,19 @@ Evaluations: 5992
 Reversals: 0
 Memory Usage: 0.0009584426879882812 MB
 
+Execution Details (2024-08-06 18:37:08.899915):
+Execution Time: 0.03003692626953125 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.0009584426879882812 MB
+
+Execution Details (2024-08-06 18:38:18.816277):
+Execution Time: 0.03099846839904785 seconds
+Number of Threads Used: 1
+Assignments: 2496
+Evaluations: 5992
+Reversals: 0
+Memory Usage: 0.0009584426879882812 MB
+

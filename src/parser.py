@@ -1,6 +1,12 @@
 # Ulto - Imperative Reversible Programming Language
 #
-# ulto_parser.py
+# parser.py
+#
+# Aman Thapa Magar <at719@sussex.ac.uk>
+
+# Ulto - Imperative Reversible Programming Language
+#
+# parser.py
 #
 # Aman Thapa Magar <at719@sussex.ac.uk>
 
@@ -115,7 +121,7 @@ class Parser:
         """
         if self.current_token[0] == 'ID' and self.peek_next_token()[0] == 'ASSIGN':
             return self.parse_assignment()
-        elif self.current_token[0] == 'REV':
+        elif self.current_token[0] == 'REV' and self.peek_next_token()[0] == 'ID':
             return self.parse_reverse()
         elif self.current_token[0] == 'REVTRACE':
             return self.parse_revtrace()
@@ -309,3 +315,5 @@ class Parser:
         Exception: Indicates a syntax error.
         """
         raise Exception(f'Invalid syntax at token {self.current_token}')
+
+

@@ -17,7 +17,7 @@ from sortedcontainers import SortedDict
 class Interpreter:
     def __init__(self, ast):
         """
-        Initializes the Interpreter with the given AST.
+        Initializes the ExecutionEngine with the given AST.
 
         Args:
         ast (list): The abstract syntax tree.
@@ -42,6 +42,7 @@ class Interpreter:
         """
         Executes the AST.
         """
+        print("\n~~~~~~~~~~~~~~~~~~~~OUTPUT~~~~~~~~~~~~~~~~~~~~\n")
         start_time = time.time()
         try:
             # collecting profiling data to find hotspots and manage accordingly during runtime.
@@ -117,7 +118,6 @@ class Interpreter:
         _, var_name, index = node
         self.update_profiling_data(var_name)
         self.update_profiling_data(index)
-
 
     def profile_if(self, node):
         """
@@ -281,7 +281,12 @@ class Interpreter:
         output = []
         for value in values:
             evaluated_value = self.evaluate_expression(value)
-            output.append(str(evaluated_value))
+            if isinstance(evaluated_value, str) and evaluated_value.startswith('"') and evaluated_value.endswith('"'):
+                output.append(evaluated_value[1:-1])  # Strip the double quotations for displaying in the output
+            elif isinstance(evaluated_value, str) and evaluated_value.startswith('`') and evaluated_value.endswith('`'):
+                output.append(evaluated_value[1:-1])  # Strip the backticks for displaying in the output
+            else:
+                output.append(str(evaluated_value))
         print(" ".join(output))
 
     def evaluate_expression(self, expr):
@@ -307,10 +312,15 @@ class Interpreter:
         elif isinstance(expr, int):
             return expr
         elif isinstance(expr, str):
-            value = self.symbol_table.get(expr)
-            if isinstance(value, LazyEval):
-                return value.evaluate()
-            return value
+            # Handle string literals and backtick-enclosed comments correctly
+            if expr.startswith('`') and expr.endswith('`'):
+                return expr  # Return the entire string as it is
+            elif isinstance(expr, str) and expr.isnumeric() is False and (
+                    expr.startswith('"') and expr.endswith('"')) == False:
+                value = self.symbol_table.get(expr)
+                if isinstance(value, LazyEval):
+                    return value.evaluate()
+                return value
         return expr
 
     def apply_operator(self, op, left, right):
@@ -375,9 +385,9 @@ class Interpreter:
         node (tuple): The revtrace node.
         """
         _, var_name, index = node
-        index = int(index)  # Ensuring index is treated as an integer for order of sequential reversals
+        index = int(index)  # Ensure index is treated as an integer
 
-        # Fetch previous value from stack
+        # Retrieve the previous value from the reverse log stack
         previous_value = self.logstack.peek(var_name, index)
         if previous_value is not None:
             print(f"Reversed state {index} of {var_name}: {previous_value}")
@@ -460,7 +470,7 @@ class Interpreter:
         """
         Prints the computation cost of the execution.
         """
-        print("\nComputation Cost:")
+        print("\n~~~~~~~~~~~~~~COMPUTATION COSTS~~~~~~~~~~~~~~~~~\n")
         print(f"Assignments: {self.assignments}")
         print(f"Evaluations: {self.evaluations}")
         print(f"Reversals: {self.reversals}")
@@ -491,7 +501,7 @@ class Interpreter:
         """
         num_threads = threading.active_count()
         execution_time = end_time - start_time
-        with open("../execution_log.txt", "a") as log_file:
+        with open("execution_log.txt", "a") as log_file:
             log_file.write(f"Execution Details ({datetime.now()}):\n")
             log_file.write(f"Execution Time: {execution_time} seconds\n")
             log_file.write(f"Number of Threads Used: {num_threads}\n")
