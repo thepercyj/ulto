@@ -1,6 +1,6 @@
 # Ulto - Imperative Reversible Programming Language
 #
-# execution_engine.py
+# interpreter.py
 #
 # Aman Thapa Magar <at719@sussex.ac.uk>
 
@@ -14,10 +14,10 @@ from src.core.logstack import LogStack
 from sortedcontainers import SortedDict
 
 
-class ExecutionEngine:
+class Interpreter:
     def __init__(self, ast):
         """
-        Initializes the ExecutionEngine with the given AST.
+        Initializes the Interpreter with the given AST.
 
         Args:
         ast (list): The abstract syntax tree.
@@ -77,6 +77,8 @@ class ExecutionEngine:
             self.profile_assignment(node)
         elif node[0] == 'reverse':
             self.profile_reverse(node)
+        elif node[0] == 'revtrace':
+            self.profile_revtrace(node)
         elif node[0] == 'if':
             self.profile_if(node)
         elif node[0] == 'while':
@@ -104,6 +106,18 @@ class ExecutionEngine:
         """
         _, var_name = node
         self.update_profiling_data(var_name)
+
+    def profile_revtrace(self, node):
+        """
+        Profiles a revtrace node.
+
+        Args:
+        node (tuple): The revtrace node.
+        """
+        _, var_name, index = node
+        self.update_profiling_data(var_name)
+        self.update_profiling_data(index)
+
 
     def profile_if(self, node):
         """
@@ -361,11 +375,12 @@ class ExecutionEngine:
         node (tuple): The revtrace node.
         """
         _, var_name, index = node
+        index = int(index)  # Ensuring index is treated as an integer for order of sequential reversals
 
-        # Retrieve the previous value from the log stack
-        previous_value = self.get_previous_value(var_name, index)
+        # Fetch previous value from stack
+        previous_value = self.logstack.peek(var_name, index)
         if previous_value is not None:
-            print(f"Reversed {index} state of {var_name}: {previous_value}")
+            print(f"Reversed state {index} of {var_name}: {previous_value}")
         else:
             print(f"No state found for {var_name} at index {index}")
 
