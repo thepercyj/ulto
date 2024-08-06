@@ -6,8 +6,8 @@
 
 import sys
 from src.lexer import tokenize
-from src.ulto_parser import Parser
-from src.execution_engine import ExecutionEngine
+from src.parser import Parser
+from src.interpreter import Interpreter
 from src.semantic_analyser import SemanticAnalyser
 
 
@@ -35,7 +35,7 @@ def main():
     analyser = SemanticAnalyser(ast)
     analyser.analyse()
 
-    engine = ExecutionEngine(ast)
+    engine = Interpreter(ast)
     engine.execute()
 
 
