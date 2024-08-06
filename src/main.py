@@ -6,7 +6,7 @@
 
 import sys
 from src.lexer import tokenize
-from src.parser import Parser
+from src.ulto_parser import Parser
 from src.interpreter import Interpreter
 from src.semantic_analyser import SemanticAnalyser
 

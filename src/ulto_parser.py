@@ -1,6 +1,6 @@
 # Ulto - Imperative Reversible Programming Language
 #
-# parser.py
+# ulto_parser.py
 #
 # Aman Thapa Magar <at719@sussex.ac.uk>
 
