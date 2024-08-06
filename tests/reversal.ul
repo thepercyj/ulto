@@ -5,18 +5,27 @@ a = a + 5
 a = a + 7
 
 # output of final state after performing a = a + 7
-print(`before reverse state:`, a)
 
-# output of previous state for a = a + 5
-rev a
-print("after reverse state:", a)
+print(`final state of a:`, a)
+
 
 # reverse tracepath (i.e., revtrace ) utilising space costs with logstack + pruning for tracking assignments to variable a
 
-# a has been reversed and its in current state of a = a + 5, going further back by using index to denote the reversal point.
-revtrace a 1 # accessing a = a + 3
+revtrace a 1 # accessing a = a + 5
+
+revtrace a 2 # accessing a = a + 3
+
+revtrace a 3 # accessing a = 1
+
+revtrace a 4 # display none as variable was not initialised and no previous assignment done for a
+
+print(`----------------------------------`)
+print(`before reverse state:`, a)
+
+# reverse operation
+
+rev a # revert to value of a = a + 5
+
+print("after reverse state:", a)
 
 
-revtrace a 2 # accessing a = 1
-
-revtrace a 3 # should display none as no previous assignments were created for a.
