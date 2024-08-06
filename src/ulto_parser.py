@@ -42,6 +42,8 @@ class Parser:
                 statements.append(self.parse_assignment())
             elif self.current_token[0] == 'REV':
                 statements.append(self.parse_reverse())
+            elif self.current_token[0] == 'REVTRACE':
+                statements.append(self.parse_revtrace())
             elif self.current_token[0] == 'IF':
                 statements.append(self.parse_if())
             elif self.current_token[0] == 'WHILE':
@@ -115,6 +117,8 @@ class Parser:
             return self.parse_assignment()
         elif self.current_token[0] == 'REV':
             return self.parse_reverse()
+        elif self.current_token[0] == 'REVTRACE':
+            return self.parse_revtrace()
         elif self.current_token[0] == 'RETURN':
             return self.parse_return()
         elif self.current_token[0] == 'IF':
@@ -176,6 +180,18 @@ class Parser:
         var_name = self.consume('ID')
         return ('reverse', var_name)
 
+    def parse_revtrace(self):
+        """
+        Parses a revtrace statement.
+
+        Returns:
+        tuple: The parsed revtrace node.
+        """
+        self.consume('REVTRACE')
+        var_name = self.consume('ID')
+        index = self.consume('NUMBER')
+        return ('revtrace', var_name, index)
+
     def parse_if(self):
         """
         Parses an if statement.
@@ -216,9 +232,12 @@ class Parser:
         """
         self.consume('PRINT')
         self.consume('LPAREN')
-        value = self.parse_expression()
+        values = [self.parse_expression()]
+        while self.current_token[0] == 'COMMA':
+            self.consume('COMMA')
+            values.append(self.parse_expression())
         self.consume('RPAREN')
-        return ('print', value)
+        return ('print', values)
 
     def parse_block(self):
         """

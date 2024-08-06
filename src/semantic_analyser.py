@@ -33,6 +33,8 @@ class SemanticAnalyser:
             self.process_assignment(node)
         elif node[0] == 'reverse':
             self.process_reverse(node)
+        elif node[0] == 'revtrace':
+            self.process_revtrace(node)
         elif node[0] == 'if':
             self.process_if(node)
         elif node[0] == 'while':
@@ -45,6 +47,17 @@ class SemanticAnalyser:
             self.process_class(node)
         else:
             self.error(f'Unknown node type: {node[0]}')
+
+    def process_revtrace(self, node):
+        """
+        Processes a revtrace node.
+
+        Args:
+        node (tuple): The revtrace node.
+        """
+        _, var_name, index = node
+        if var_name not in self.symbol_table:
+            self.error(f'Variable "{var_name}" used before declaration')
 
     def process_assignment(self, node):
         """
@@ -141,8 +154,9 @@ class SemanticAnalyser:
         Args:
         node (tuple): The print node.
         """
-        _, value = node
-        self.evaluate_expression(value)
+        _, values = node
+        for value in values:
+            self.evaluate_expression(value)
 
     def process_import(self, node):
         """

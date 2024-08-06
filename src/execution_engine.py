@@ -188,6 +188,8 @@ class ExecutionEngine:
             self.execute_assignment(node)
         elif node_type == 'reverse':
             self.execute_reverse(node)
+        elif node_type == 'revtrace':
+            self.execute_revtrace(node)
         elif node_type == 'if':
             self.execute_if(node)
         elif node_type == 'while':
@@ -261,9 +263,12 @@ class ExecutionEngine:
         Args:
         node (tuple): The print node.
         """
-        _, value = node
-        evaluated_value = self.evaluate_expression(value)
-        print(evaluated_value)
+        _, values = node
+        output = []
+        for value in values:
+            evaluated_value = self.evaluate_expression(value)
+            output.append(str(evaluated_value))
+        print(" ".join(output))
 
     def evaluate_expression(self, expr):
         """
@@ -348,21 +353,48 @@ class ExecutionEngine:
             self.memory_manager.deallocate(current_size)
             self.memory_manager.allocate(prev_size)
 
-    def find_previous_value(self, var_name):
+    def execute_revtrace(self, node):
         """
-        Finds the previous value of a variable.
+        Executes a revtrace node.
+
+        Args:
+        node (tuple): The revtrace node.
+        """
+        _, var_name, index = node
+
+        # Retrieve the previous value from the log stack
+        previous_value = self.get_previous_value(var_name, index)
+        if previous_value is not None:
+            print(f"Reversed {index} state of {var_name}: {previous_value}")
+        else:
+            print(f"No state found for {var_name} at index {index}")
+
+    def get_previous_value(self, var_name, index):
+        """
+        Retrieves the previous value of a variable from the log stack by index.
 
         Args:
         var_name (str): The name of the variable.
+        index (int): The index of the state to retrieve.
 
         Returns:
-        The previous value of the variable.
+        The previous value of the variable or None if not found.
         """
-        for var, value in reversed(self.history):
-            if var == var_name:
-                self.history.remove((var, value))
-                return value
-        return None
+        values = []
+        while len(values) < index:
+            previous_value = self.logstack.pop(var_name)
+            if previous_value is None:
+                break
+            values.append(previous_value)
+
+        # Restoring the log stack state to tracepath assignment history
+        for value in reversed(values):
+            self.logstack.push(var_name, value)
+
+        if index <= len(values):
+            return values[index - 1]
+        else:
+            return None
 
     def execute_import(self, node):
         """
