@@ -1,3 +1,9 @@
+# Ulto - Imperative Reversible Programming Language
+#
+# logstack.py
+#
+# Aman Thapa Magar <at719@sussex.ac.uk>
+
 import time
 import sys
 
@@ -15,6 +21,11 @@ class LogStack:
     def pop(self, var_name):
         if var_name in self.log and self.log[var_name]:
             return self.log[var_name].pop()[0]
+        return None
+
+    def peek(self, var_name, index=1):
+        if var_name in self.log and len(self.log[var_name]) >= index:
+            return self.log[var_name][-index][0]
         return None
 
     def prune(self, retention_time=3600):
