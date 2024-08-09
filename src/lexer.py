@@ -18,6 +18,12 @@ def tokenize(code):
     """
     tokens = []
     token_specification = [
+        ('EQ', r'=='),  # Equality
+        ('NEQ', r'!='),  # Not equal
+        ('LTE', r'<='),  # Less than or equal
+        ('GTE', r'>='),  # Greater than or equal
+        ('LT', r'<'),  # Less than
+        ('GT', r'>'),  # Greater than
         ('NUMBER', r'\d+'),  # Integer
         ('ASSIGN', r'='),  # Assignment
         ('ID', r'[A-Za-z_][A-Za-z0-9_]*'),  # Identifiers
@@ -25,25 +31,20 @@ def tokenize(code):
         ('MINUS', r'-'),  # Subtraction
         ('TIMES', r'\*'),  # Multiplication
         ('OVER', r'/'),  # Division
-        ('EQ', r'=='),  # Equality
-        ('NEQ', r'!='),  # Not equal
-        ('LT', r'<'),  # Less than
-        ('GT', r'>'),  # Greater than
-        ('LTE', r'<='),  # Less than or equal
-        ('GTE', r'>='),  # Greater than or equal
         ('LPAREN', r'\('),  # Left parenthesis
         ('RPAREN', r'\)'),  # Right parenthesis
         ('LBRACKET', r'\['),  # Left bracket
         ('RBRACKET', r'\]'),  # Right bracket
         ('COLON', r':'),  # Colon
         ('DEF', r'def'),  # Function keyword
-        ('CLASS', r'class'),  # Class keyword
         ('RETURN', r'return'),  # Return keyword
         ('IF', r'if'),  # If keyword
         ('ELSE', r'else'),  # Else keyword
+        ('FOR', r'for'),  # For loop keyword
+        ('IN', r'in'),  # In keyword for iteration
+        ('RANGE', r'range'),  # Range keyword for numeric ranges
         ('WHILE', r'while'),  # While keyword
         ('PRINT', r'print'),  # Print keyword
-        ('NEW', r'new'),  # Keyword for new instances
         ('REV', r'rev'),  # Reverse keyword
         ('REVTRACE', r'revtrace'),  # reverse tracepath for accessing history
         ('STRING', r'(?:"[^"]*"|`[^`]*`)'),  # String literals with both " and `
@@ -66,7 +67,7 @@ def tokenize(code):
             value = value  # Keep backticks for interpreter to handle
         elif kind == 'COMMENT':
             continue
-        elif kind == 'ID' and value in ('class', 'def', 'return', 'new', 'if', 'else', 'while', 'print', 'rev', 'revtrace'):
+        elif kind == 'ID' and value in ('def', 'return', 'new', 'if', 'else', 'while', 'print', 'rev', 'revtrace', 'for', 'in', 'range'):
             kind = value.upper()
         elif kind == 'NEWLINE':
             line_start = mo.end()
