@@ -28,7 +28,7 @@ class LogStack:
             return self.log[var_name][-index][0]
         return None
 
-    def prune(self, retention_time=3600):
+    def prune(self, retention_time=50000):
         current_time = time.time()
         if current_time - self.last_pruned > retention_time:
             for var_name in list(self.log.keys()):
