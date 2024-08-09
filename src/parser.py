@@ -42,9 +42,7 @@ class Parser:
         """
         statements = []
         while self.current_token is not None:
-            if self.current_token[0] == 'CLASS':
-                statements.append(self.parse_class())
-            elif self.current_token[0] == 'ID' and self.peek_next_token()[0] == 'ASSIGN':
+            if self.current_token[0] == 'ID' and self.peek_next_token()[0] == 'ASSIGN':
                 statements.append(self.parse_assignment())
             elif self.current_token[0] == 'REV':
                 statements.append(self.parse_reverse())
@@ -52,6 +50,8 @@ class Parser:
                 statements.append(self.parse_revtrace())
             elif self.current_token[0] == 'IF':
                 statements.append(self.parse_if())
+            elif self.current_token[0] == 'FOR':
+                statements.append(self.parse_for())
             elif self.current_token[0] == 'WHILE':
                 statements.append(self.parse_while())
             elif self.current_token[0] == 'PRINT':
@@ -60,21 +60,6 @@ class Parser:
                 self.error()
         return statements
 
-    def parse_class(self):
-        """
-        Parses a class definition.
-
-        Returns:
-        tuple: The parsed class node.
-        """
-        self.consume('CLASS')
-        class_name = self.consume('ID')
-        self.consume('COLON')
-        methods = []
-        while self.current_token and self.current_token[0] != 'NEWLINE':
-            if self.current_token[0] == 'DEF':
-                methods.append(self.parse_function())
-        return ('class', class_name, methods)
 
     def parse_function(self):
         """
@@ -215,6 +200,38 @@ class Parser:
             self.consume('COLON')
             false_branch = self.parse_block()
         return ('if', condition, true_branch, false_branch)
+
+    def parse_for(self):
+        """
+        Parses a for loop statement.
+
+        Returns:
+        tuple: The parsed for loop node.
+        """
+        self.consume('FOR')
+        var_name = self.consume('ID')
+        self.consume('IN')
+
+        # Determine if the next part is a range or a variable
+        if self.current_token[0] == 'RANGE':
+            self.consume('RANGE')
+            self.consume('LPAREN')
+            start_value = self.parse_expression()
+            self.consume('COMMA')
+            end_value = self.parse_expression()
+            step_value = None
+            if self.current_token[0] == 'COMMA':
+                self.consume('COMMA')
+                step_value = self.parse_expression()
+            self.consume('RPAREN')
+            iterable = ('range', start_value, end_value, step_value)
+        else:
+            # Assume it's a variable holding an iterable
+            iterable = self.parse_expression()
+
+        self.consume('COLON')
+        body = self.parse_block()
+        return ('for', var_name, iterable, body)
 
     def parse_while(self):
         """

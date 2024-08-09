@@ -206,6 +206,8 @@ class Interpreter:
             self.execute_revtrace(node)
         elif node_type == 'if':
             self.execute_if(node)
+        elif node_type == 'for':
+            self.execute_for(node)
         elif node_type == 'while':
             self.execute_while(node)
         elif node_type == 'print':
@@ -269,6 +271,37 @@ class Interpreter:
         while self.evaluate_expression(condition):
             for stmt in body:
                 self.execute_node(stmt)
+
+    def execute_for(self, node):
+        """
+        Executes a for loop node.
+
+        Args:
+        node (tuple): The for loop node.
+        """
+        _, var_name, iterable, body = node
+
+        if iterable[0] == 'range':
+            _, start_value, end_value, step_value = iterable
+            start_value = self.evaluate_expression(start_value)
+            end_value = self.evaluate_expression(end_value)
+            step_value = self.evaluate_expression(step_value) if step_value else 1
+
+            current_value = start_value
+            while current_value < end_value:
+                self.symbol_table[var_name] = current_value
+                for stmt in body:
+                    self.execute_node(stmt)
+                current_value += step_value
+        else:
+            iterable_value = self.evaluate_expression(iterable)
+            if not isinstance(iterable_value, (list, str)):
+                self.error(f'Variable "{iterable}" is not an iterable')
+
+            for item in iterable_value:
+                self.symbol_table[var_name] = item
+                for stmt in body:
+                    self.execute_node(stmt)
 
     def execute_print(self, node):
         """
@@ -420,28 +453,6 @@ class Interpreter:
             return values[index - 1]
         else:
             return None
-
-    def execute_import(self, node):
-        """
-        Executes an import node.
-
-        Args:
-        node (tuple): The import node.
-        """
-        _, module_name = node
-
-    def execute_class(self, node):
-        """
-        Executes a class node.
-
-        Args:
-        node (tuple): The class node.
-        """
-        _, class_name, methods = node
-        self.symbol_table[class_name] = {
-            'type': 'class',
-            'methods': {method[1]: method for method in methods}
-        }
 
     def execute_function(self, node):
         """

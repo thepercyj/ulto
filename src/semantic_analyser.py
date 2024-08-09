@@ -37,14 +37,12 @@ class SemanticAnalyser:
             self.process_revtrace(node)
         elif node[0] == 'if':
             self.process_if(node)
+        elif node[0] == 'for':
+            self.process_for(node)
         elif node[0] == 'while':
             self.process_while(node)
         elif node[0] == 'print':
             self.process_print(node)
-        elif node[0] == 'import':
-            self.process_import(node)
-        elif node[0] == 'class':
-            self.process_class(node)
         else:
             self.error(f'Unknown node type: {node[0]}')
 
@@ -135,6 +133,31 @@ class SemanticAnalyser:
         for stmt in false_branch:
             self.analyse_node(stmt)
 
+    def process_for(self, node):
+        """
+        Processes a for loop node.
+
+        Args:
+        node (tuple): The for loop node.
+        """
+        _, var_name, iterable, body = node
+
+        if iterable[0] == 'range':
+            _, start_value, end_value, step_value = iterable
+            self.inline_expression(start_value)
+            self.inline_expression(end_value)
+            if step_value:
+                self.inline_expression(step_value)
+        else:
+            self.inline_expression(iterable)
+            if isinstance(iterable, str) and iterable not in self.symbol_table:
+                self.error(f'Variable "{iterable}" used before declaration')
+
+        self.symbol_table[var_name] = None
+        for stmt in body:
+            self.analyse_node(stmt)
+        del self.symbol_table[var_name]
+
     def process_while(self, node):
         """
         Processes a while node.
@@ -157,28 +180,6 @@ class SemanticAnalyser:
         _, values = node
         for value in values:
             self.evaluate_expression(value)
-
-    def process_import(self, node):
-        """
-        Processes an import node.
-
-        Args:
-        node (tuple): The import node.
-        """
-        _, module_name = node
-
-    def process_class(self, node):
-        """
-        Processes a class node.
-
-        Args:
-        node (tuple): The class node.
-        """
-        _, class_name, methods = node
-        self.symbol_table[class_name] = {
-            'type': 'class',
-            'methods': {method[1]: method for method in methods}
-        }
 
     def evaluate_expression(self, expr):
         """
