@@ -14,6 +14,10 @@ from src.core.logstack import LogStack
 from sortedcontainers import SortedDict
 
 
+class BreakException(Exception):
+    pass
+
+
 class Interpreter:
     def __init__(self, ast):
         """
@@ -126,10 +130,17 @@ class Interpreter:
         Args:
         node (tuple): The if node.
         """
-        _, condition, true_branch, false_branch = node
+        _, condition, true_branch, elif_branches, false_branch = node
+
         self.update_profiling_data(condition)
         for stmt in true_branch:
             self.profile_node(stmt)
+
+        for elif_condition, elif_branch in elif_branches:
+            self.update_profiling_data(elif_condition)
+            for stmt in elif_branch:
+                self.profile_node(stmt)
+
         for stmt in false_branch:
             self.profile_node(stmt)
 
@@ -212,6 +223,16 @@ class Interpreter:
             self.execute_while(node)
         elif node_type == 'print':
             self.execute_print(node)
+        elif node_type == 'plus_assign':
+            self.execute_plus_assign(node)
+        elif node_type == 'minus_assign':
+            self.execute_minus_assign(node)
+        elif node_type == 'times_assign':
+            self.execute_times_assign(node)
+        elif node_type == 'over_assign':
+            self.execute_over_assign(node)
+        elif node_type == 'break':
+            raise BreakException()
         else:
             self.error(f'Unknown node type: {node_type}')
 
@@ -247,6 +268,105 @@ class Interpreter:
         self.logstack.push(var_name, previous_value)
         self.symbol_table[var_name] = lazy_value
 
+    def execute_plus_assign(self, node):
+        _, var_name, value = node
+
+        # Ensure the current value is fully evaluated
+        current_value = self.symbol_table.get(var_name)
+        if isinstance(current_value, LazyEval):
+            current_value = current_value.evaluate()
+
+        # Ensure the value to add is fully evaluated
+        addition_value = self.evaluate_expression(value)
+        if isinstance(addition_value, LazyEval):
+            addition_value = addition_value.evaluate()
+
+        # Log the current value for potential reversal
+        self.logstack.push(var_name, current_value)
+
+        # Now, perform the actual addition and update the symbol table
+        new_value = current_value + addition_value
+
+        # If lazy, wrap it in LazyEval again
+        if var_name in self.eager_vars:
+            self.symbol_table[var_name] = new_value
+        else:
+            self.symbol_table[var_name] = LazyEval(new_value, self)
+
+    def execute_minus_assign(self, node):
+        _, var_name, value = node
+
+        # Ensure the current value is fully evaluated
+        current_value = self.symbol_table.get(var_name)
+        if isinstance(current_value, LazyEval):
+            current_value = current_value.evaluate()
+
+        # Ensure the value to add is fully evaluated
+        subtraction_value = self.evaluate_expression(value)
+        if isinstance(subtraction_value, LazyEval):
+            subtraction_value = subtraction_value.evaluate()
+
+        # Log the current value for potential reversal
+        self.logstack.push(var_name, current_value)
+
+        # Now, perform the actual subtraction and update the symbol table
+        new_value = current_value - subtraction_value
+
+        if var_name in self.eager_vars:
+            self.symbol_table[var_name] = new_value
+        else:
+            self.symbol_table[var_name] = LazyEval(new_value, self)
+
+    def execute_times_assign(self, node):
+        _, var_name, value = node
+
+        # Ensure the current value is fully evaluated
+        current_value = self.symbol_table.get(var_name)
+        if isinstance(current_value, LazyEval):
+            current_value = current_value.evaluate()
+
+        # Ensure the value to add is fully evaluated
+        multiplication_value = self.evaluate_expression(value)
+        if isinstance(multiplication_value, LazyEval):
+            multiplication_value = multiplication_value.evaluate()
+
+        # Log the current value for potential reversal
+        self.logstack.push(var_name, current_value)
+
+        # Now, perform the actual multiplication and update the symbol table
+        new_value = current_value * multiplication_value
+
+        # If lazy, wrap it in LazyEval again
+        if var_name in self.eager_vars:
+            self.symbol_table[var_name] = new_value
+        else:
+            self.symbol_table[var_name] = LazyEval(new_value, self)
+
+    def execute_over_assign(self, node):
+        _, var_name, value = node
+
+        # Ensure the current value is fully evaluated
+        current_value = self.symbol_table.get(var_name)
+        if isinstance(current_value, LazyEval):
+            current_value = current_value.evaluate()
+
+        # Ensure the value to add is fully evaluated
+        division_value = self.evaluate_expression(value)
+        if isinstance(division_value, LazyEval):
+            division_value = division_value.evaluate()
+
+        # Log the current value for potential reversal
+        self.logstack.push(var_name, current_value)
+
+        # Now, perform the actual division and update the symbol table
+        new_value = current_value / division_value
+
+        # If lazy, wrap it in LazyEval again
+        if var_name in self.eager_vars:
+            self.symbol_table[var_name] = new_value
+        else:
+            self.symbol_table[var_name] = LazyEval(new_value, self)
+
     def execute_if(self, node):
         """
         Executes an if node.
@@ -254,9 +374,18 @@ class Interpreter:
         Args:
         node (tuple): The if node.
         """
-        _, condition, true_branch, false_branch = node
+        _, condition, true_branch, elif_branches, false_branch = node
         condition_result = self.evaluate_expression(condition)
-        branch = true_branch if condition_result else false_branch
+        if condition_result:
+            branch = true_branch
+        else:
+            for elif_condition, elif_branch in elif_branches:
+                if self.evaluate_expression(elif_condition):
+                    branch = elif_branch
+                    break
+            else:
+                branch = false_branch
+
         for stmt in branch:
             self.execute_node(stmt)
 
@@ -268,9 +397,31 @@ class Interpreter:
         node (tuple): The while node.
         """
         _, condition, body = node
-        while self.evaluate_expression(condition):
-            for stmt in body:
-                self.execute_node(stmt)
+
+        if isinstance(condition, tuple) and len(condition) == 3:
+            left, op, right = condition
+
+            if op == 'lt' and isinstance(right, int):
+                n_value = self.evaluate_expression(right)
+                while self.evaluate_expression(left) < n_value:
+                    for stmt in body:
+                        self.execute_node(stmt)
+                    # Eagerly evaluate i to avoid re-evaluation
+                    self.symbol_table[left] = self.evaluate_expression(self.symbol_table.get(left)) + 1
+            else:
+                while self.evaluate_expression(condition):
+                    try:
+                        for stmt in body:
+                            self.execute_node(stmt)
+                    except BreakException:
+                        break
+        else:
+            while self.evaluate_expression(condition):
+                try:
+                    for stmt in body:
+                        self.execute_node(stmt)
+                except BreakException:
+                    break
 
     def execute_for(self, node):
         """
@@ -290,18 +441,27 @@ class Interpreter:
             current_value = start_value
             while current_value < end_value:
                 self.symbol_table[var_name] = current_value
-                for stmt in body:
-                    self.execute_node(stmt)
+                try:
+                    for stmt in body:
+                        self.execute_node(stmt)
+                except BreakException:
+                    break
                 current_value += step_value
         else:
-            iterable_value = self.evaluate_expression(iterable)
+            if isinstance(iterable, list):
+                iterable_value = [self.evaluate_expression(item) for item in iterable]
+            else:
+                iterable_value = self.evaluate_expression(iterable)
             if not isinstance(iterable_value, (list, str)):
                 self.error(f'Variable "{iterable}" is not an iterable')
 
             for item in iterable_value:
                 self.symbol_table[var_name] = item
-                for stmt in body:
-                    self.execute_node(stmt)
+                try:
+                    for stmt in body:
+                        self.execute_node(stmt)
+                except BreakException:
+                    break
 
     def execute_print(self, node):
         """
@@ -334,26 +494,55 @@ class Interpreter:
         """
         self.evaluations += 1
         if isinstance(expr, LazyEval):
+            if expr._evaluated_value is None:
+                expr._evaluated_value = self.evaluate_expression(expr.expression)
+            return expr._evaluated_value
+
+        if isinstance(expr, LazyEval):
             return expr.evaluate()
+
         if isinstance(expr, list):
             return [self.evaluate_expression(item) for item in expr]
-        elif isinstance(expr, tuple) and len(expr) == 3:
-            left, op, right = expr
-            left_val = self.evaluate_expression(left)
-            right_val = self.evaluate_expression(right)
-            return self.apply_operator(op, left_val, right_val)
-        elif isinstance(expr, int):
+
+        elif isinstance(expr, tuple):
+            if len(expr) == 3:
+                left, op, right = expr
+                if op == 'index':  # Handle list indexing
+                    left_val = self.evaluate_expression(left)
+                    right_val = self.evaluate_expression(right)
+                    if isinstance(left_val, list):
+                        return left_val[right_val]
+                    else:
+                        self.error(f"Cannot index non-list type: {left_val}")
+                else:
+                    left_val = self.evaluate_expression(left)
+                    right_val = self.evaluate_expression(right)
+                    return self.apply_operator(op, left_val, right_val)
+            elif len(expr) == 2:  # Handle simple ('NUMBER', value) or similar structures
+                kind, value = expr
+                if kind == 'NUMBER':
+                    return value
+                elif kind == 'ID':
+                    return self.symbol_table.get(value)
+                else:
+                    self.error(f"Unexpected tuple kind: {kind}")
+            else:
+                self.error(f"Unexpected tuple structure: {expr}")
+
+        elif isinstance(expr, int) or isinstance(expr, bool):
             return expr
+
         elif isinstance(expr, str):
-            # Handle string literals and backtick-enclosed comments correctly
             if expr.startswith('`') and expr.endswith('`'):
-                return expr  # Return the entire string as it is
-            elif isinstance(expr, str) and expr.isnumeric() is False and (
-                    expr.startswith('"') and expr.endswith('"')) == False:
+                return expr
+            elif expr.isnumeric() is False and not expr.startswith('"'):
                 value = self.symbol_table.get(expr)
                 if isinstance(value, LazyEval):
                     return value.evaluate()
                 return value
+        else:
+            self.error(f"Unknown expression type: {expr}")
+
         return expr
 
     def apply_operator(self, op, left, right):
@@ -368,6 +557,10 @@ class Interpreter:
         Returns:
         The result of the operation.
         """
+        if isinstance(left, LazyEval):
+            left = left.evaluate()
+        if isinstance(right, LazyEval):
+            right = right.evaluate()
         if op == 'plus':
             return left + right
         elif op == 'minus':
@@ -388,6 +581,14 @@ class Interpreter:
             return left <= right
         elif op == 'gte':
             return left >= right
+        elif op == 'and':
+            return left and right
+        elif op == 'or':
+            return left or right
+        elif op == 'modulo':
+            return left % right
+        elif op == 'int_div':
+            return left // right
         else:
             self.error(f'Unknown operator: {op}')
 

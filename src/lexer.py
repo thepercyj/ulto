@@ -18,6 +18,12 @@ def tokenize(code):
     """
     tokens = []
     token_specification = [
+        ('PLUS_ASSIGN', r'\+='),  # Addition assignment
+        ('MINUS_ASSIGN', r'-='),  # Subtraction assignment
+        ('TIMES_ASSIGN', r'\*='),  # Multiplication assignment
+        ('OVER_ASSIGN', r'/='),  # Division assignment
+        ('MODULO', r'%'),  # Modulo operator
+        ('INT_DIV', r'//'),  # Integer division
         ('EQ', r'=='),  # Equality
         ('NEQ', r'!='),  # Not equal
         ('LTE', r'<='),  # Less than or equal
@@ -36,9 +42,8 @@ def tokenize(code):
         ('LBRACKET', r'\['),  # Left bracket
         ('RBRACKET', r'\]'),  # Right bracket
         ('COLON', r':'),  # Colon
-        ('DEF', r'def'),  # Function keyword
-        ('RETURN', r'return'),  # Return keyword
         ('IF', r'if'),  # If keyword
+        ('ELIF', r'elif'),  # 'elif' keyword
         ('ELSE', r'else'),  # Else keyword
         ('FOR', r'for'),  # For loop keyword
         ('IN', r'in'),  # In keyword for iteration
@@ -53,6 +58,11 @@ def tokenize(code):
         ('SKIP', r'[ \t]+'),  # Skip over spaces / tabs
         ('NEWLINE', r'\n'),  # Line end
         ('MISMATCH', r'.'),  # Any other character
+        ('AND', r'and'),  # Logical AND
+        ('OR', r'or'),  # Logical OR
+        ('TRUE', r'True'),  # Boolean True
+        ('FALSE', r'False'),  # Boolean False
+        ('BREAK', r'break')  # Break keyword
     ]
     tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
     line_num = 1
@@ -67,7 +77,7 @@ def tokenize(code):
             value = value  # Keep backticks for interpreter to handle
         elif kind == 'COMMENT':
             continue
-        elif kind == 'ID' and value in ('def', 'return', 'new', 'if', 'else', 'while', 'print', 'rev', 'revtrace', 'for', 'in', 'range'):
+        elif kind == 'ID' and value in ('if', 'else', 'while', 'print', 'rev', 'revtrace', 'for', 'in', 'range', 'and', 'or', 'break', 'True', 'False'):
             kind = value.upper()
         elif kind == 'NEWLINE':
             line_start = mo.end()

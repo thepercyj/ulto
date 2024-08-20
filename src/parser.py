@@ -42,8 +42,12 @@ class Parser:
         """
         statements = []
         while self.current_token is not None:
-            if self.current_token[0] == 'ID' and self.peek_next_token()[0] == 'ASSIGN':
-                statements.append(self.parse_assignment())
+            if self.current_token[0] == 'ID':
+                next_token_type = self.peek_next_token()[0]
+                if next_token_type in ['ASSIGN', 'PLUS_ASSIGN', 'MINUS_ASSIGN', 'TIMES_ASSIGN', 'OVER_ASSIGN']:
+                    statements.append(self.parse_assignment())
+                else:
+                    self.error()
             elif self.current_token[0] == 'REV':
                 statements.append(self.parse_reverse())
             elif self.current_token[0] == 'REVTRACE':
@@ -104,8 +108,14 @@ class Parser:
         Returns:
         tuple: The parsed statement node.
         """
-        if self.current_token[0] == 'ID' and self.peek_next_token()[0] == 'ASSIGN':
-            return self.parse_assignment()
+        if self.current_token[0] == 'ID':
+            next_token = self.peek_next_token()[0]
+            if next_token in ['ASSIGN', 'PLUS_ASSIGN', 'MINUS_ASSIGN', 'TIMES_ASSIGN', 'OVER_ASSIGN']:
+                return self.parse_assignment()
+            elif next_token == 'LPAREN':
+                return self.parse_expression()
+        elif self.current_token[0] == 'LBRACKET':
+            return self.consume_value()
         elif self.current_token[0] == 'REV' and self.peek_next_token()[0] == 'ID':
             return self.parse_reverse()
         elif self.current_token[0] == 'REVTRACE':
@@ -129,9 +139,28 @@ class Parser:
         tuple: The parsed assignment node.
         """
         var_name = self.consume('ID')
-        self.consume('ASSIGN')
-        value = self.parse_expression()
-        return ('assign', var_name, value)
+        if self.current_token[0] == 'ASSIGN':
+            self.consume('ASSIGN')
+            value = self.parse_expression()
+            return ('assign', var_name, value)
+        elif self.current_token[0] == 'PLUS_ASSIGN':
+            self.consume('PLUS_ASSIGN')
+            value = self.parse_expression()
+            return ('plus_assign', var_name, value)
+        elif self.current_token[0] == 'MINUS_ASSIGN':
+            self.consume('MINUS_ASSIGN')
+            value = self.parse_expression()
+            return ('minus_assign', var_name, value)
+        elif self.current_token[0] == 'TIMES_ASSIGN':
+            self.consume('TIMES_ASSIGN')
+            value = self.parse_expression()
+            return ('times_assign', var_name, value)
+        elif self.current_token[0] == 'OVER_ASSIGN':
+            self.consume('OVER_ASSIGN')
+            value = self.parse_expression()
+            return ('over_assign', var_name, value)
+        else:
+            self.error()
 
     def parse_expression(self):
         """
@@ -140,25 +169,46 @@ class Parser:
         Returns:
         tuple: The parsed expression node.
         """
-        left = self.consume_value()
-        while self.current_token and self.current_token[0] in ('PLUS', 'MINUS', 'TIMES', 'OVER', 'EQ', 'NEQ', 'LT', 'GT', 'LTE', 'GTE', 'DOT'):
+        left = self.parse_primary_expression()
+
+        while self.current_token and self.current_token[0] in (
+                'PLUS', 'MINUS', 'TIMES', 'OVER', 'EQ', 'NEQ', 'LT', 'GT', 'LTE', 'GTE', 'DOT', 'AND', 'OR', 'MODULO', 'INT_DIV'):
             op = self.current_token[0].lower()
             self.advance()
-            if op == 'dot':
-                method_name = self.consume('ID')
-                self.consume('LPAREN')
-                args = []
-                if self.current_token[0] != 'RPAREN':
-                    args.append(self.consume_value())
-                    while self.current_token[0] == 'COMMA':
-                        self.consume('COMMA')
-                        args.append(self.consume_value())
-                self.consume('RPAREN')
-                left = (left, 'call', method_name, args)
-            else:
-                right = self.consume_value()
-                left = (left, op, right)
+
+            # Handle the right-hand side which might involve another complex expression
+            right = self.parse_primary_expression()
+
+            left = (left, op, right)
+
         return left
+
+    def parse_primary_expression(self):
+        """
+        Parses a primary expression (number, identifier, or parenthesized expression).
+        Returns:
+        The parsed expression.
+        """
+        if self.current_token[0] == 'LPAREN':
+            self.consume('LPAREN')
+            expr = self.parse_expression()  # Parse the entire sub-expression within parentheses
+            self.consume('RPAREN')
+            return expr
+        elif self.current_token[0] == 'ID':
+            # Handle an identifier, which could be followed by an index
+            id_token = self.consume('ID')
+
+            # Check if the next token is a LBRACKET, indicating list indexing
+            if self.current_token and self.current_token[0] == 'LBRACKET':
+                self.consume('LBRACKET')
+                index_expr = self.parse_expression()  # Parse the expression inside the brackets
+                self.consume('RBRACKET')
+                return (id_token, 'index', index_expr)
+
+            return id_token
+
+        else:
+            return self.consume_value()
 
     def parse_reverse(self):
         """
@@ -192,14 +242,37 @@ class Parser:
         """
         self.consume('IF')
         condition = self.parse_expression()
+
+        # Handle compound conditions
+        while self.current_token and self.current_token[0] in ['AND', 'OR']:
+            op = self.current_token[0].lower()
+            self.advance()
+            right_condition = self.parse_expression()
+            condition = (condition, op, right_condition)
+
         self.consume('COLON')
         true_branch = self.parse_block()
+
+        elif_branches = []
         false_branch = []
+
+        # Handle elif branches
+        while self.current_token and self.current_token[0] == 'ELIF':
+            self.advance()  # Move past 'elif'
+            elif_condition = self.parse_expression()
+            self.consume('COLON')
+            elif_branch = self.parse_block()
+            elif_branches.append((elif_condition, elif_branch))
+
+        # Handle else branch
         if self.current_token and self.current_token[0] == 'ELSE':
             self.consume('ELSE')
             self.consume('COLON')
             false_branch = self.parse_block()
-        return ('if', condition, true_branch, false_branch)
+
+        result = ('if', condition, true_branch, elif_branches, false_branch)
+        print("Parsed if structure:", result)  # Debugging output
+        return result
 
     def parse_for(self):
         """
@@ -212,19 +285,29 @@ class Parser:
         var_name = self.consume('ID')
         self.consume('IN')
 
-        # Determine if the next part is a range or a variable
-        if self.current_token[0] == 'RANGE':
+        if self.current_token[0] == 'LBRACKET':
+            iterable = self.consume_value()  # This will consume the entire list
+
+        elif self.current_token[0] == 'RANGE':
             self.consume('RANGE')
             self.consume('LPAREN')
             start_value = self.parse_expression()
-            self.consume('COMMA')
-            end_value = self.parse_expression()
-            step_value = None
+
             if self.current_token[0] == 'COMMA':
                 self.consume('COMMA')
-                step_value = self.parse_expression()
+                end_value = self.parse_expression()
+                step_value = None
+                if self.current_token[0] == 'COMMA':
+                    self.consume('COMMA')
+                    step_value = self.parse_expression()
+            else:
+                end_value = start_value  # Treat single parameter as range(end)
+                start_value = ('NUMBER', 0)  # Default start at 0
+                step_value = None
+
             self.consume('RPAREN')
             iterable = ('range', start_value, end_value, step_value)
+
         else:
             # Assume it's a variable holding an iterable
             iterable = self.parse_expression()
@@ -242,8 +325,12 @@ class Parser:
         """
         self.consume('WHILE')
         condition = self.parse_expression()
+        print(f"Parsed condition in while: {condition}")  # Debugging output
+
         self.consume('COLON')
         body = self.parse_block()
+
+        print(f"Parsed while loop with condition: {condition} and body: {body}")  # Debugging output
         return ('while', condition, body)
 
     def parse_print(self):
@@ -270,8 +357,21 @@ class Parser:
         list: The list of parsed statements.
         """
         statements = []
-        while self.current_token and self.current_token[0] != 'NEWLINE' and self.current_token[0] != 'ELSE':
-            statements.append(self.parse_statement())
+
+        while self.current_token:
+            if self.current_token[0] in ('ELIF', 'ELSE', 'NEWLINE'):
+                break
+            elif self.current_token[0] == 'LBRACKET':
+                statements.append(self.consume_value())
+            else:
+                stmt = self.parse_statement()
+                statements.append(stmt)
+
+            # Advance to the next token if we encounter a newline
+            if self.current_token and self.current_token[0] == 'NEWLINE':
+                self.advance()
+                if self.current_token and self.current_token[0] in ('ELIF', 'ELSE'):
+                    break
         return statements
 
     def consume(self, token_type):
@@ -284,10 +384,26 @@ class Parser:
         Returns:
         str: The value of the consumed token.
         """
-        if self.current_token and self.current_token[0] == token_type:
-            value = self.current_token[1]
-            self.advance()
-            return value
+        if self.current_token is None:
+            raise SyntaxError("Unexpected end of input")
+
+        if self.current_token[0] == 'LBRACKET':
+            self.consume('LBRACKET')
+            elements = []
+            while self.current_token and self.current_token[0] != 'RBRACKET':
+                elements.append(self.consume_value())
+                if self.current_token[0] == 'COMMA':
+                    self.consume('COMMA')
+            self.consume('RBRACKET')
+            return elements
+        elif self.current_token[0] in ('NUMBER', 'ID', 'STRING'):
+            return self.consume(self.current_token[0])
+        elif self.current_token[0] == 'TRUE':
+            self.consume('TRUE')
+            return True
+        elif self.current_token[0] == 'FALSE':
+            self.consume('FALSE')
+            return False
         else:
             self.error()
 

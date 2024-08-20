@@ -43,8 +43,50 @@ class SemanticAnalyser:
             self.process_while(node)
         elif node[0] == 'print':
             self.process_print(node)
+        elif node[0] == 'plus_assign':
+            self.process_plus_assign(node)
+        elif node[0] == 'minus_assign':
+            self.process_minus_assign(node)
+        elif node[0] == 'times_assign':
+            self.process_times_assign(node)
+        elif node[0] == 'over_assign':
+            self.process_over_assign(node)
+        elif node[0] == 'break':
+            self.process_break(node)
         else:
             self.error(f'Unknown node type: {node[0]}')
+
+    def process_break(self, node):
+        """
+        Processes a break statement node.
+
+        Args:
+        node (tuple): The break statement node.
+        """
+        # Ensure that the break statement is used inside a loop
+        if not self.is_inside_loop():
+            self.error("Break statement not inside a loop")
+
+    def is_inside_loop(self):
+        """
+        Checks if the current context is inside a loop.
+        This function would need to track the current context
+        to ensure 'break' is within a loop.
+
+        Returns:
+        bool: True if inside a loop, False otherwise.
+        """
+        return True
+
+    def process_assignment(self, node):
+        """
+        Processes an assignment node.
+
+        Args:
+        node (tuple): The assignment node.
+        """
+        _, var_name, value = node
+        self.symbol_table[var_name] = self.inline_expression(value)
 
     def process_revtrace(self, node):
         """
@@ -57,33 +99,59 @@ class SemanticAnalyser:
         if var_name not in self.symbol_table:
             self.error(f'Variable "{var_name}" used before declaration')
 
-    def process_assignment(self, node):
-        """
-        Processes an assignment node.
-
-        Args:
-        node (tuple): The assignment node.
-        """
+    def process_plus_assign(self, node):
         _, var_name, value = node
-        self.symbol_table[var_name] = self.inline_expression(value)
+        if var_name not in self.symbol_table:
+            self.error(f'Variable "{var_name}" used before declaration')
+        self.inline_expression(value)
+
+    def process_minus_assign(self, node):
+        _, var_name, value = node
+        if var_name not in self.symbol_table:
+            self.error(f'Variable "{var_name}" used before declaration')
+        self.inline_expression(value)
+
+    def process_times_assign(self, node):
+        _, var_name, value = node
+        if var_name not in self.symbol_table:
+            self.error(f'Variable "{var_name}" used before declaration')
+        self.inline_expression(value)
+
+    def process_over_assign(self, node):
+        _, var_name, value = node
+        if var_name not in self.symbol_table:
+            self.error(f'Variable "{var_name}" used before declaration')
+        self.inline_expression(value)
 
     def inline_expression(self, expr):
         """
         Inlines an expression.
 
         Args:
-        expr (tuple): The expression to be inlined.
+        expr (tuple or any): The expression to be inlined.
 
         Returns:
         The inlined expression.
         """
         if isinstance(expr, tuple):
-            left, op, right = expr
-            left = self.inline_expression(left)
-            right = self.inline_expression(right)
-            if isinstance(left, int) and isinstance(right, int):
-                return self.evaluate_operation(op, left, right)
-            return (left, op, right)
+            if len(expr) == 3:
+                left, op, right = expr
+                left = self.inline_expression(left)
+                right = self.inline_expression(right)
+                if isinstance(left, int) and isinstance(right, int):
+                    return self.evaluate_operation(op, left, right)
+                return (left, op, right)
+            elif len(expr) == 2:  # Handle tuples with 2 elements
+                left, op = expr
+                left = self.inline_expression(left)
+                if isinstance(left, int):
+                    return (left, op)
+                return (left, op)
+            else:
+                # Handle a single value tuple (or malformed expression)
+                return expr[0] if len(expr) == 1 else expr
+        elif isinstance(expr, list):
+            return [self.inline_expression(item) for item in expr]
         return expr
 
     def evaluate_operation(self, op, left, right):
@@ -106,6 +174,10 @@ class SemanticAnalyser:
             return left * right
         elif op == 'over':
             return left / right
+        elif op == 'modulo':
+            return left % right
+        elif op == 'int_div':
+            return left // right
         return None
 
     def process_reverse(self, node):
@@ -126,10 +198,21 @@ class SemanticAnalyser:
         Args:
         node (tuple): The if node.
         """
-        _, condition, true_branch, false_branch = node
+        if node[0] != 'if':
+            self.error("Expected 'if' node")
+
+        condition, true_branch, elif_branches, false_branch = node[1], node[2], node[3], node[4]
+
         self.evaluate_expression(condition)
+
         for stmt in true_branch:
             self.analyse_node(stmt)
+
+        for elif_condition, elif_branch in elif_branches:
+            self.evaluate_expression(elif_condition)
+            for stmt in elif_branch:
+                self.analyse_node(stmt)
+
         for stmt in false_branch:
             self.analyse_node(stmt)
 
@@ -148,15 +231,34 @@ class SemanticAnalyser:
             self.inline_expression(end_value)
             if step_value:
                 self.inline_expression(step_value)
+        elif isinstance(iterable, list):
+            for element in iterable:
+                if isinstance(element, int) or isinstance(element, str):
+                    continue
+                else:
+                    self.error(f'Invalid type in iterable: {element}')
         else:
             self.inline_expression(iterable)
             if isinstance(iterable, str) and iterable not in self.symbol_table:
                 self.error(f'Variable "{iterable}" used before declaration')
 
+        # Ensure the loop variable is added to the symbol table
+        if var_name in self.symbol_table:
+            # Optionally handle or track shadowed variables
+            shadowed = True
+        else:
+            shadowed = False
         self.symbol_table[var_name] = None
+        print(f"Added loop variable '{var_name}' to symbol table.")
+
         for stmt in body:
+            print(f"Analyzing statement in for loop body: {stmt}")
             self.analyse_node(stmt)
-        del self.symbol_table[var_name]
+
+        # Remove the loop variable from the symbol table after the loop is processed
+        if not shadowed:
+            del self.symbol_table[var_name]
+            print(f"Removed loop variable '{var_name}' from symbol table.")
 
     def process_while(self, node):
         """
