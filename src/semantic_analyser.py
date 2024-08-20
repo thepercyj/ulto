@@ -53,8 +53,20 @@ class SemanticAnalyser:
             self.process_over_assign(node)
         elif node[0] == 'break':
             self.process_break(node)
+        elif node[0] == 'len':
+            self.process_len(node)
         else:
             self.error(f'Unknown node type: {node[0]}')
+
+    def process_len(self, node):
+        """
+        Processes a len function node.
+
+        Args:
+        node (tuple): The len function node.
+        """
+        _, expr = node
+        self.inline_expression(expr)
 
     def process_break(self, node):
         """
@@ -249,17 +261,13 @@ class SemanticAnalyser:
         else:
             shadowed = False
         self.symbol_table[var_name] = None
-        print(f"Added loop variable '{var_name}' to symbol table.")
 
         for stmt in body:
-            print(f"Analyzing statement in for loop body: {stmt}")
             self.analyse_node(stmt)
 
         # Remove the loop variable from the symbol table after the loop is processed
         if not shadowed:
             del self.symbol_table[var_name]
-            print(f"Removed loop variable '{var_name}' from symbol table.")
-
     def process_while(self, node):
         """
         Processes a while node.

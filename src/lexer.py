@@ -18,6 +18,8 @@ def tokenize(code):
     """
     tokens = []
     token_specification = [
+        ('LBRACE', r'\{'),  # Left brace for opening a code block
+        ('RBRACE', r'\}'),  # Right brace for closing a code block
         ('PLUS_ASSIGN', r'\+='),  # Addition assignment
         ('MINUS_ASSIGN', r'-='),  # Subtraction assignment
         ('TIMES_ASSIGN', r'\*='),  # Multiplication assignment
@@ -62,11 +64,14 @@ def tokenize(code):
         ('OR', r'or'),  # Logical OR
         ('TRUE', r'True'),  # Boolean True
         ('FALSE', r'False'),  # Boolean False
-        ('BREAK', r'break')  # Break keyword
+        ('BREAK', r'break'),  # Break keyword
+        ('LEN', r'len')  # 'len' keyword
     ]
     tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
     line_num = 1
     line_start = 0
+    current_indent_level = 0
+    indent_stack = [0]
     for mo in re.finditer(tok_regex, code):
         kind = mo.lastgroup
         value = mo.group()
@@ -74,19 +79,34 @@ def tokenize(code):
         if kind == 'NUMBER':
             value = int(value)
         elif kind == 'STRING':
-            value = value  # Keep backticks for interpreter to handle
+            value = value
         elif kind == 'COMMENT':
             continue
-        elif kind == 'ID' and value in ('if', 'else', 'while', 'print', 'rev', 'revtrace', 'for', 'in', 'range', 'and', 'or', 'break', 'True', 'False'):
+        elif kind == 'ID' and value in ('if', 'else', 'while', 'print', 'rev', 'revtrace', 'for', 'in', 'range', 'and', 'or', 'break', 'True', 'False', 'len'):
             kind = value.upper()
         elif kind == 'NEWLINE':
             line_start = mo.end()
             line_num += 1
+
+            next_match = re.match(r'[ \t]*', code[line_start:])
+            if next_match:
+                indent = len(next_match.group())
+                if indent > current_indent_level:
+                    indent_stack.append(indent)
+                    tokens.append(('INDENT', indent, line_num, column))
+                    current_indent_level = indent
+                while indent < current_indent_level:
+                    indent_stack.pop()
+                    tokens.append(('DEDENT', indent, line_num, column))
+                    current_indent_level = indent_stack[-1]
             continue
         elif kind == 'SKIP':
             continue
         elif kind == 'MISMATCH':
             raise RuntimeError(f'{value!r} unexpected on line {line_num}, column {column}')
         tokens.append((kind, value, line_num, column))
+
+    while len(indent_stack) > 1:
+        tokens.append(('DEDENT', indent_stack.pop(), line_num, 0))
     return tokens
 
