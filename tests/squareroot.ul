@@ -1,0 +1,29 @@
+# Initialize variables
+a = 0
+n = 25
+b = n // 2
+sqrt_estimate = b
+
+# Square root calculation
+while a != b:
+    a = b
+    b = (n // a + a) // 2
+    sqrt_estimate = b
+
+# Print the estimated square root
+print(`Estimated square root is:`, b)
+
+# Determine the number of states to reverse
+num_states = 3
+
+# Reverse tracepath the square root variables using a loop
+for i in range(1, num_states + 1):
+    revtrace a i
+    revtrace b i
+
+# Reversing the states using a loop
+for i in range(1, num_states + 1):
+    rev a
+    print(`reversed state of a after step`, i, `:`, a)
+    rev b
+    print(`reversed state of b after step`, i, `:`, b)
