@@ -4,6 +4,7 @@
 #
 # Aman Thapa Magar <at719@sussex.ac.uk>
 
+import os
 import sys
 import time
 import threading
@@ -44,7 +45,9 @@ class Interpreter:
         self.logstack = LogStack()
 
         # loading machine compiled arithmetic and compound assignment file.
-        self.lib = ctypes.CDLL('./liboperations.so')
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        lib_path = os.path.join(script_dir, 'liboperations.so')
+        self.lib = ctypes.CDLL(lib_path)
 
         # Here, arithmetic and compound assignments are handled via C compiler through FFI using ctypes
         self.lib.execute_add.argtypes = [ctypes.c_int, ctypes.c_int]
