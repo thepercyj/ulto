@@ -73,8 +73,6 @@ if __name__ == "__main__":
     installer = Setup()
     installer.setup_link()
 
-lib_operations_path = Path(__file__).resolve().parent / 'src' / 'liboperations.so'
-
 setup(
     name='ulto',
     version='1.0.0',
@@ -102,7 +100,4 @@ setup(
         'src': ['liboperations.so'],
     },
     include_package_data=True,
-    data_files=[
-        ('src', [str(lib_operations_path)]),
-    ],
 )

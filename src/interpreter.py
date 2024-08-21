@@ -720,7 +720,7 @@ class Interpreter:
         print(f"Evaluations: {self.evaluations}")
         print(f"Reversals: {self.reversals}")
         memory_usage = self.get_memory_usage()
-        print(f"Memory Usage: {memory_usage:.2f} MB")
+        print(f"Memory Usage: {memory_usage} MB")
 
     def get_memory_usage(self):
         """
