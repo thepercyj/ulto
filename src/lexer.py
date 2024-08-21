@@ -45,7 +45,7 @@ def tokenize(code):
         ('RBRACKET', r'\]'),  # Right bracket
         ('COLON', r':'),  # Colon
         ('IF', r'if'),  # If keyword
-        ('ELIF', r'elif'),  # 'elif' keyword
+        ('ELIF', r'elif'),  # Elif keyword
         ('ELSE', r'else'),  # Else keyword
         ('FOR', r'for'),  # For loop keyword
         ('IN', r'in'),  # In keyword for iteration

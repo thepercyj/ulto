@@ -302,9 +302,15 @@ class SemanticAnalyser:
             for item in expr:
                 self.evaluate_expression(item)
         elif isinstance(expr, tuple):
-            left, op, right = expr
-            self.evaluate_expression(left)
-            self.evaluate_expression(right)
+            if expr[0] == 'len':
+                _, value = expr
+                self.evaluate_expression(value)
+            elif len(expr) == 3:
+                left, op, right = expr
+                self.evaluate_expression(left)
+                self.evaluate_expression(right)
+            else:
+                self.error(f"Unexpected tuple structure: {expr}")
         elif isinstance(expr, str):
             # Skip string literals and backtick-enclosed comments
             if expr.startswith('`') and expr.endswith('`'):

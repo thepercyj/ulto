@@ -60,6 +60,10 @@ class Parser:
                 statements.append(self.parse_while())
             elif self.current_token[0] == 'PRINT':
                 statements.append(self.parse_print())
+            elif self.current_token[0] == 'INDENT':
+                self.consume('INDENT')
+                statements.extend(self.parse_block())
+                self.consume('DEDENT')
             else:
                 self.error()
         return statements
@@ -254,7 +258,7 @@ class Parser:
         """
         self.consume('REVTRACE')
         var_name = self.consume('ID')
-        index = self.consume('NUMBER')
+        index = self.parse_expression()
         return ('revtrace', var_name, index)
 
     def parse_if(self):
@@ -349,14 +353,16 @@ class Parser:
         """
         self.consume('WHILE')
         condition = self.parse_expression()
-        print(f"Parsed condition in while: {condition}")  # Debugging output
+        # support for both { } and indent/dedent codeblocks
+        if self.current_token[0] == 'COLON':
+            self.consume('COLON')
+            body = self.parse_block()
+        elif self.current_token[0] == 'LBRACE':
+            body = self.parse_block()
+        else:
+            self.error()
 
-        self.consume('COLON')
-        body = self.parse_block()
-
-        print(f"Parsed while loop with condition: {condition} and body: {body}")  # Debugging output
         return ('while', condition, body)
-
     def parse_print(self):
         """
         Parses a print statement.
@@ -382,21 +388,21 @@ class Parser:
         """
         statements = []
         if self.current_token[0] == 'LBRACE':
-            self.consume('LBRACE')  # Consume the '{'
+            self.consume('LBRACE')  # '{'
             while self.current_token and self.current_token[0] != 'RBRACE':
                 stmt = self.parse_statement()
                 statements.append(stmt)
                 if self.current_token and self.current_token[0] == 'NEWLINE':
                     self.advance()
-            self.consume('RBRACE')  # Consume the '}'
+            self.consume('RBRACE')  # '}'
         elif self.current_token[0] == 'INDENT':
-            self.consume('INDENT')  # Consume the INDENT
+            self.consume('INDENT')  # INDENT
             while self.current_token and self.current_token[0] != 'DEDENT':
                 stmt = self.parse_statement()
                 statements.append(stmt)
                 if self.current_token and self.current_token[0] == 'NEWLINE':
                     self.advance()
-            self.consume('DEDENT')  # Consume the DEDENT
+            self.consume('DEDENT')  # DEDENT
         else:
             while self.current_token and self.current_token[0] not in ('ELIF', 'ELSE', 'NEWLINE'):
                 stmt = self.parse_statement()

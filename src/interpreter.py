@@ -498,16 +498,13 @@ class Interpreter:
                 expr._evaluated_value = self.evaluate_expression(expr.expression)
             return expr._evaluated_value
 
-        if isinstance(expr, LazyEval):
-            return expr.evaluate()
-
         if isinstance(expr, list):
             return [self.evaluate_expression(item) for item in expr]
 
         elif isinstance(expr, tuple):
             if len(expr) == 3:
                 left, op, right = expr
-                if op == 'index':  # Handle list indexing
+                if op == 'index':
                     left_val = self.evaluate_expression(left)
                     right_val = self.evaluate_expression(right)
                     if isinstance(left_val, list):
@@ -518,14 +515,13 @@ class Interpreter:
                     left_val = self.evaluate_expression(left)
                     right_val = self.evaluate_expression(right)
                     return self.apply_operator(op, left_val, right_val)
-            elif len(expr) == 2:  # Handle simple ('NUMBER', value) or similar structures
-                kind, value = expr
-                if kind == 'NUMBER':
-                    return value
-                elif kind == 'ID':
-                    return self.symbol_table.get(value)
+            elif len(expr) == 2 and expr[0] == 'len':
+                _, inner_expr = expr
+                evaluated_expr = self.evaluate_expression(inner_expr)
+                if isinstance(evaluated_expr, str) or isinstance(evaluated_expr, list):
+                    return len(evaluated_expr)
                 else:
-                    self.error(f"Unexpected tuple kind: {kind}")
+                    self.error(f"len() function requires a string or list, got {type(evaluated_expr).__name__}")
             else:
                 self.error(f"Unexpected tuple structure: {expr}")
 
@@ -618,13 +614,13 @@ class Interpreter:
         Args:
         node (tuple): The revtrace node.
         """
-        _, var_name, index = node
-        index = int(index)  # Ensure index is treated as an integer
+        _, var_name, index_expr = node
+        index = self.evaluate_expression(index_expr)  # support for both iterable variables and integers
 
         # Retrieve the previous value from the reverse log stack
         previous_value = self.logstack.peek(var_name, index)
         if previous_value is not None:
-            print(f"Reversed state {index} of {var_name}: {previous_value}")
+            print(f"Reverse Tracepath state {index} of {var_name}: {previous_value}")
         else:
             print(f"No state found for {var_name} at index {index}")
 
