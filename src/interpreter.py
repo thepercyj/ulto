@@ -7,6 +7,7 @@
 import sys
 import time
 import threading
+import ctypes
 from datetime import datetime
 from src.core.malloc import MemoryManager
 from src.core.lazyeval import LazyEval
@@ -41,6 +42,65 @@ class Interpreter:
         self.profile_batch_size = 250
         self.profile_counter = 0
         self.logstack = LogStack()
+
+        # loading machine compiled arithmetic and compound assignment file.
+        self.lib = ctypes.CDLL('./liboperations.so')
+
+        # Here, arithmetic and compound assignments are handled via C compiler through FFI using ctypes
+        self.lib.execute_add.argtypes = [ctypes.c_int, ctypes.c_int]
+        self.lib.execute_add.restype = ctypes.c_int
+
+        self.lib.execute_sub.argtypes = [ctypes.c_int, ctypes.c_int]
+        self.lib.execute_sub.restype = ctypes.c_int
+
+        self.lib.execute_mul.argtypes = [ctypes.c_int, ctypes.c_int]
+        self.lib.execute_mul.restype = ctypes.c_int
+
+        self.lib.execute_div.argtypes = [ctypes.c_int, ctypes.c_int]
+        self.lib.execute_div.restype = ctypes.c_int
+
+        self.lib.execute_modulo.argtypes = [ctypes.c_int, ctypes.c_int]
+        self.lib.execute_modulo.restype = ctypes.c_int
+
+        self.lib.execute_int_div.argtypes = [ctypes.c_int, ctypes.c_int]
+        self.lib.execute_int_div.restype = ctypes.c_int
+
+        self.lib.execute_eq.argtypes = [ctypes.c_int, ctypes.c_int]
+        self.lib.execute_eq.restype = ctypes.c_int
+
+        self.lib.execute_neq.argtypes = [ctypes.c_int, ctypes.c_int]
+        self.lib.execute_neq.restype = ctypes.c_int
+
+        self.lib.execute_lt.argtypes = [ctypes.c_int, ctypes.c_int]
+        self.lib.execute_lt.restype = ctypes.c_int
+
+        self.lib.execute_gt.argtypes = [ctypes.c_int, ctypes.c_int]
+        self.lib.execute_gt.restype = ctypes.c_int
+
+        self.lib.execute_lte.argtypes = [ctypes.c_int, ctypes.c_int]
+        self.lib.execute_lte.restype = ctypes.c_int
+
+        self.lib.execute_gte.argtypes = [ctypes.c_int, ctypes.c_int]
+        self.lib.execute_gte.restype = ctypes.c_int
+
+        self.lib.execute_and.argtypes = [ctypes.c_int, ctypes.c_int]
+        self.lib.execute_and.restype = ctypes.c_int
+
+        self.lib.execute_or.argtypes = [ctypes.c_int, ctypes.c_int]
+        self.lib.execute_or.restype = ctypes.c_int
+
+        # Define argument and return types for the compound assignment operations
+        self.lib.execute_add_assign.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.c_int]
+        self.lib.execute_add_assign.restype = ctypes.c_int
+
+        self.lib.execute_sub_assign.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.c_int]
+        self.lib.execute_sub_assign.restype = ctypes.c_int
+
+        self.lib.execute_mul_assign.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.c_int]
+        self.lib.execute_mul_assign.restype = ctypes.c_int
+
+        self.lib.execute_div_assign.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.c_int]
+        self.lib.execute_div_assign.restype = ctypes.c_int
 
     def execute(self):
         """
@@ -260,7 +320,7 @@ class Interpreter:
         size = sys.getsizeof(lazy_value)
         self.memory_manager.allocate(size)
 
-        # deallocate memory based on previous value for reusability on a different operation.
+        # deallocate memory based on previous value for re-usability on a different operation.
         if previous_value is not None:
             prev_size = sys.getsizeof(previous_value)
             self.memory_manager.deallocate(prev_size)
@@ -270,23 +330,15 @@ class Interpreter:
 
     def execute_plus_assign(self, node):
         _, var_name, value = node
-
-        # Ensure the current value is fully evaluated
         current_value = self.symbol_table.get(var_name)
         if isinstance(current_value, LazyEval):
             current_value = current_value.evaluate()
-
-        # Ensure the value to add is fully evaluated
         addition_value = self.evaluate_expression(value)
         if isinstance(addition_value, LazyEval):
             addition_value = addition_value.evaluate()
-
-        # Log the current value for potential reversal
+        # Log current value for maybe reversal in logstack
         self.logstack.push(var_name, current_value)
-
-        # Now, perform the actual addition and update the symbol table
-        new_value = current_value + addition_value
-
+        new_value = self.lib.execute_add_assign(ctypes.byref(ctypes.c_int(current_value)), addition_value)
         # If lazy, wrap it in LazyEval again
         if var_name in self.eager_vars:
             self.symbol_table[var_name] = new_value
@@ -295,23 +347,16 @@ class Interpreter:
 
     def execute_minus_assign(self, node):
         _, var_name, value = node
-
-        # Ensure the current value is fully evaluated
         current_value = self.symbol_table.get(var_name)
         if isinstance(current_value, LazyEval):
             current_value = current_value.evaluate()
-
-        # Ensure the value to add is fully evaluated
         subtraction_value = self.evaluate_expression(value)
         if isinstance(subtraction_value, LazyEval):
             subtraction_value = subtraction_value.evaluate()
-
-        # Log the current value for potential reversal
+        # Log current value for maybe reversal in logstack
         self.logstack.push(var_name, current_value)
-
-        # Now, perform the actual subtraction and update the symbol table
-        new_value = current_value - subtraction_value
-
+        new_value = self.lib.execute_sub_assign(ctypes.byref(ctypes.c_int(current_value)), subtraction_value)
+        # If lazy, wrap it in LazyEval again
         if var_name in self.eager_vars:
             self.symbol_table[var_name] = new_value
         else:
@@ -319,23 +364,15 @@ class Interpreter:
 
     def execute_times_assign(self, node):
         _, var_name, value = node
-
-        # Ensure the current value is fully evaluated
         current_value = self.symbol_table.get(var_name)
         if isinstance(current_value, LazyEval):
             current_value = current_value.evaluate()
-
-        # Ensure the value to add is fully evaluated
         multiplication_value = self.evaluate_expression(value)
         if isinstance(multiplication_value, LazyEval):
             multiplication_value = multiplication_value.evaluate()
-
-        # Log the current value for potential reversal
+        # Log current value for maybe reversal in logstack
         self.logstack.push(var_name, current_value)
-
-        # Now, perform the actual multiplication and update the symbol table
-        new_value = current_value * multiplication_value
-
+        new_value = self.lib.execute_mul_assign(ctypes.byref(ctypes.c_int(current_value)), multiplication_value)
         # If lazy, wrap it in LazyEval again
         if var_name in self.eager_vars:
             self.symbol_table[var_name] = new_value
@@ -344,23 +381,15 @@ class Interpreter:
 
     def execute_over_assign(self, node):
         _, var_name, value = node
-
-        # Ensure the current value is fully evaluated
         current_value = self.symbol_table.get(var_name)
         if isinstance(current_value, LazyEval):
             current_value = current_value.evaluate()
-
-        # Ensure the value to add is fully evaluated
         division_value = self.evaluate_expression(value)
         if isinstance(division_value, LazyEval):
             division_value = division_value.evaluate()
-
-        # Log the current value for potential reversal
+        # Log current value for maybe reversal in logstack
         self.logstack.push(var_name, current_value)
-
-        # Now, perform the actual division and update the symbol table
-        new_value = current_value / division_value
-
+        new_value = self.lib.execute_div_assign(ctypes.byref(ctypes.c_int(current_value)), division_value)
         # If lazy, wrap it in LazyEval again
         if var_name in self.eager_vars:
             self.symbol_table[var_name] = new_value
@@ -558,33 +587,33 @@ class Interpreter:
         if isinstance(right, LazyEval):
             right = right.evaluate()
         if op == 'plus':
-            return left + right
+            return self.lib.execute_add(left, right)
         elif op == 'minus':
-            return left - right
+            return self.lib.execute_sub(left, right)
         elif op == 'times':
-            return left * right
+            return self.lib.execute_mul(left, right)
         elif op == 'over':
-            return left / right
-        elif op == 'eq':
-            return left == right
-        elif op == 'neq':
-            return left != right
-        elif op == 'lt':
-            return left < right
-        elif op == 'gt':
-            return left > right
-        elif op == 'lte':
-            return left <= right
-        elif op == 'gte':
-            return left >= right
-        elif op == 'and':
-            return left and right
-        elif op == 'or':
-            return left or right
+            return self.lib.execute_div(left, right)
         elif op == 'modulo':
-            return left % right
+            return self.lib.execute_modulo(left, right)
         elif op == 'int_div':
-            return left // right
+            return self.lib.execute_int_div(left, right)
+        elif op == 'eq':
+            return self.lib.execute_eq(left, right)
+        elif op == 'neq':
+            return self.lib.execute_neq(left, right)
+        elif op == 'lt':
+            return self.lib.execute_lt(left, right)
+        elif op == 'gt':
+            return self.lib.execute_gt(left, right)
+        elif op == 'lte':
+            return self.lib.execute_lte(left, right)
+        elif op == 'gte':
+            return self.lib.execute_gte(left, right)
+        elif op == 'and':
+            return self.lib.execute_and(left, right)
+        elif op == 'or':
+            return self.lib.execute_or(left, right)
         else:
             self.error(f'Unknown operator: {op}')
 
@@ -596,16 +625,21 @@ class Interpreter:
         node (tuple): The reverse node.
         """
         self.reversals += 1
-        _, var_name = node
-        previous_value = self.logstack.pop(var_name)
-        if previous_value is not None:
-            self.symbol_table[var_name] = previous_value
+        if node[0] == 'reversible_block':
+            _, block = node
+            for stmt in reversed(block):
+                self.execute_node(stmt)
+        else:
+            _, var_name = node
+            previous_value = self.logstack.pop(var_name)
+            if previous_value is not None:
+                self.symbol_table[var_name] = previous_value
 
-            # memory estimation required since, reversal keeps track of history consuming space.
-            current_size = sys.getsizeof(self.symbol_table[var_name])
-            prev_size = sys.getsizeof(previous_value)
-            self.memory_manager.deallocate(current_size)
-            self.memory_manager.allocate(prev_size)
+                # memory estimation required since, reversal keeps track of history consuming space.
+                current_size = sys.getsizeof(self.symbol_table[var_name])
+                prev_size = sys.getsizeof(previous_value)
+                self.memory_manager.deallocate(current_size)
+                self.memory_manager.allocate(prev_size)
 
     def execute_revtrace(self, node):
         """

@@ -1,4 +1,4 @@
-grammar Ulto;
+grammar ulto;
 
 program
     : statement* EOF
@@ -12,7 +12,6 @@ statement
     | forLoop
     | whileLoop
     | printStatement
-    | functionDefinition
     | breakStatement
     ;
 
@@ -21,43 +20,39 @@ assignment
     ;
 
 reverse
-    : 'rev' ID
+    : REV ID
     ;
 
 revtrace
-    : 'revtrace' ID NUMBER
+    : REVTRACE ID NUMBER
     ;
 
 ifStatement
-    : 'if' expression ':' block elifBranch* elseBranch?
+    : IF expression COLON block elifBranch* elseBranch?
     ;
 
 elifBranch
-    : 'elif' expression ':' block
+    : ELIF expression COLON block
     ;
 
 elseBranch
-    : 'else' ':' block
+    : ELSE COLON block
     ;
 
 forLoop
-    : 'for' ID 'in' iterable ':' block
+    : FOR ID IN iterable COLON block
     ;
 
 whileLoop
-    : 'while' expression ':' block
+    : WHILE expression COLON block
     ;
 
 printStatement
-    : 'print' '(' expression (',' expression)* ')'
+    : PRINT LPAREN expression (COMMA expression)* RPAREN
     ;
 
 breakStatement
-    : 'break'
-    ;
-
-functionDefinition
-    : 'def' ID '(' (ID (',' ID)*)? ')' ':' block
+    : BREAK
     ;
 
 expression
@@ -67,11 +62,11 @@ expression
 primaryExpression
     : NUMBER
     | STRING
-    | 'True'
-    | 'False'
-    | 'len' '(' expression ')'
-    | ID ('[' expression ']')?
-    | '(' expression ')'
+    | TRUE
+    | FALSE
+    | LEN LPAREN expression RPAREN
+    | ID (LBRACKET expression RBRACKET)?
+    | LPAREN expression RPAREN
     ;
 
 operator
@@ -85,8 +80,8 @@ operator
     | GT
     | LTE
     | GTE
-    | 'and'
-    | 'or'
+    | AND
+    | OR
     | MODULO
     | INT_DIV
     ;
@@ -96,8 +91,8 @@ block
     ;
 
 iterable
-    : 'range' '(' expression (',' expression (',' expression)?)? ')'
-    | '[' expression (',' expression)* ']'
+    : RANGE LPAREN expression (COMMA expression (COMMA expression)?)? RPAREN
+    | LBRACKET expression (COMMA expression)* RBRACKET
     | ID
     ;
 
@@ -121,6 +116,22 @@ PLUS_ASSIGN : '+=' ;
 MINUS_ASSIGN: '-=' ;
 TIMES_ASSIGN: '*=' ;
 OVER_ASSIGN : '/=' ;
+REV         : 'rev' ;
+REVTRACE    : 'revtrace' ;
+IF          : 'if' ;
+ELIF        : 'elif' ;
+ELSE        : 'else' ;
+FOR         : 'for' ;
+WHILE       : 'while' ;
+IN          : 'in' ;
+PRINT       : 'print' ;
+BREAK       : 'break' ;
+TRUE        : 'True' ;
+FALSE       : 'False' ;
+AND         : 'and' ;
+OR          : 'or' ;
+LEN         : 'len' ;
+RANGE       : 'range' ;
 LPAREN      : '(' ;
 RPAREN      : ')' ;
 LBRACKET    : '[' ;
