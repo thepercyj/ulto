@@ -73,6 +73,8 @@ if __name__ == "__main__":
     installer = Setup()
     installer.setup_link()
 
+lib_operations_path = Path(__file__).resolve().parent / 'src' / 'liboperations.so'
+
 setup(
     name='ulto',
     version='1.0.0',
@@ -96,4 +98,11 @@ setup(
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.6',
+    package_data={
+        'src': ['liboperations.so'],
+    },
+    include_package_data=True,
+    data_files=[
+        ('/usr/local/lib/python3.12/dist-packages/ulto-1.0.0-py3.12.egg/src', [str(lib_operations_path)]),
+    ],
 )
