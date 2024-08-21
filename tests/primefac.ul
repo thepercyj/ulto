@@ -1,0 +1,28 @@
+# Initialize variables
+n = 100
+factors = []
+i = 2
+
+# Prime factorization
+while i * i <= n:
+    while n % i == 0:
+        factors = factors + [i]
+        n = n // i
+    i += 1
+
+if n > 1:
+    factors = factors + [n]  # If there's a remaining prime factor greater than sqrt(n), add it
+
+# Print the factors
+print(`Prime factors are:`, factors)
+
+# Reverse the prime factorization
+while factors != []:
+    rev i
+    rev n
+    rev factors
+    if factors == []:
+        break
+
+# Final print to confirm reversal
+print(`After reversal, n:`, n, `factors:`, factors, `i:`, i)
