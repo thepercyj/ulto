@@ -103,6 +103,6 @@ setup(
     },
     include_package_data=True,
     data_files=[
-        ('/usr/local/lib/python3.12/dist-packages/ulto-1.0.0-py3.12.egg/src', [str(lib_operations_path)]),
+        ('src', [str(lib_operations_path)]),
     ],
 )
