@@ -1,0 +1,26 @@
+a = 0
+b = 1
+fib = a
+fib_list = []
+
+n = 500
+i = 2
+
+# Generate Fibonacci sequence
+while i < n:
+    fib = a + b
+    print(fib)
+    a = b
+    b = fib
+    fib_list = fib_list + [b]
+    i += 1
+
+# Reverse and print all values of a until the initial state is reached
+while i == 500:
+    rev a
+    print(`reversed value of a:`, a)
+    rev b
+    print(`reversed value of b:`, b)
+    if a == 0:
+        break
+
