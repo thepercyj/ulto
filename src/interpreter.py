@@ -9,6 +9,7 @@ import sys
 import time
 import threading
 import ctypes
+import platform
 from datetime import datetime
 from src.core.malloc import MemoryManager
 from src.core.lazyeval import LazyEval
@@ -44,9 +45,16 @@ class Interpreter:
         self.profile_counter = 0
         self.logstack = LogStack()
 
+        # Determining the OS family
+        system = platform.system()
         # loading machine compiled arithmetic and compound assignment file.
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        lib_path = os.path.join(script_dir, 'liboperations.so')
+
+        if system == "Windows":
+            lib_path = os.path.join(script_dir, 'operations.dll')
+        else:  # If Linux or other Unix-like systems
+            lib_path = os.path.join(script_dir, 'liboperations.so')
+
         self.lib = ctypes.CDLL(lib_path)
 
         # Here, arithmetic and compound assignments are handled via C compiler through FFI using ctypes

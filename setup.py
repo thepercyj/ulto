@@ -97,7 +97,7 @@ setup(
     ],
     python_requires='>=3.6',
     package_data={
-        'src': ['liboperations.so'],
+        'src': ['operations.dll', 'liboperations.so'],
     },
     include_package_data=True,
 )
