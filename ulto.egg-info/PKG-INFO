@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: ulto
+Version: 1.0.0
+Summary: Ulto - Imperative Reversible Programming Language
+Author: Aman Thapa Magar
+Author-email: at719@sussex.ac.uk
+Classifier: Development Status :: 1 - Alpha
+Classifier: Programming Language :: Ulto :: 1
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+License-File: LICENSE
+Requires-Dist: sortedcontainers
+Requires-Dist: pywin32; platform_system == "Windows"

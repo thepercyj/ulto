@@ -1,0 +1,4 @@
+sortedcontainers
+
+[:platform_system == "Windows"]
+pywin32

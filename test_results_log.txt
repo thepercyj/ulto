@@ -1,0 +1,352 @@
+--------------ulto-simple-reversal-------------------------------------
+
+Execution Details (2024-08-22 12:55:00.550607):
+Execution Time: 0.266904354095459 seconds
+Number of Threads Used: 1
+Assignments: 4
+Evaluations: 17011
+Reversals: 2000
+Memory Usage: 0.00057220458984375 MB
+
+Execution Details (2024-08-22 12:55:07.569476):
+Execution Time: 0.35791730880737305 seconds
+Number of Threads Used: 1
+Assignments: 4
+Evaluations: 17011
+Reversals: 2000
+Memory Usage: 0.00057220458984375 MB
+
+Execution Details (2024-08-22 12:55:10.935348):
+Execution Time: 0.4544210433959961 seconds
+Number of Threads Used: 1
+Assignments: 4
+Evaluations: 17011
+Reversals: 2000
+Memory Usage: 0.00057220458984375 MB
+
+----------------ulto-simple-reversal------------------------------------
+
+----------------ulto-fib-reversal---------------------------------------
+
+Execution Details (2024-08-22 12:57:44.050813):
+Execution Time: 0.4659140110015869 seconds
+Number of Threads Used: 1
+Assignments: 3998
+Evaluations: 20966
+Reversals: 1996
+Memory Usage: 0.0008668899536132812 MB
+
+Execution Details (2024-08-22 12:58:00.073797):
+Execution Time: 0.46605825424194336 seconds
+Number of Threads Used: 1
+Assignments: 3998
+Evaluations: 20966
+Reversals: 1996
+Memory Usage: 0.0008668899536132812 MB
+
+Execution Details (2024-08-22 12:58:12.003977):
+Execution Time: 0.2825326919555664 seconds
+Number of Threads Used: 1
+Assignments: 3998
+Evaluations: 20966
+Reversals: 1996
+Memory Usage: 0.0008668899536132812 MB
+
+----------------ulto-fib-reversal---------------------------------------
+
+
+
+
+
+--------------python-simple-reversal--------------------------------------
+
+Execution Time: 0.15769624710083008 seconds
+Number of Threads Used: 1
+Peak Memory Usage: 0.000477 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+
+Execution Time: 0.08713054656982422 seconds
+Number of Threads Used: 1
+Peak Memory Usage: 0.000477 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+
+Execution Time: 0.09023451805114746 seconds
+Number of Threads Used: 1
+Peak Memory Usage: 0.000477 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+--------------python-simple-reversal--------------------------------------
+
+----------------python-fib-reversal---------------------------------------
+
+Execution Time: 0.07348036766052246 seconds
+Number of Threads Used: 1
+Peak Memory Usage: 0.091582 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+Execution Time: 0.06884288787841797 seconds
+Number of Threads Used: 1
+Peak Memory Usage: 0.091582 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+Execution Time: 0.06743955612182617 seconds
+Number of Threads Used: 1
+Peak Memory Usage: 0.091582 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+----------------python-fib-reversal---------------------------------------
+
+
+
+
+
+--------------go-simple-reversal--------------------------------------
+
+Execution Time: 0.082111 seconds
+Number of Threads Used: 1
+Memory Used: 0.109062 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+Execution Time: 0.039753 seconds
+Number of Threads Used: 1
+Memory Used: 0.109047 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+Execution Time: 0.040033 seconds
+Number of Threads Used: 1
+Memory Used: 0.109047 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+--------------go-simple-reversal--------------------------------------
+
+----------------go-fib-reversal---------------------------------------
+
+Execution Time: 0.022319 seconds
+Number of Threads Used: 1
+Memory Used: 0.834587 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+Execution Time: 0.036332 seconds
+Number of Threads Used: 1
+Memory Used: 0.834633 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+Execution Time: 0.041605 seconds
+Number of Threads Used: 1
+Memory Used: 0.834587 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+----------------go-fib-reversal---------------------------------------
+
+
+
+
+
+--------------java-simple-reversal--------------------------------------
+
+Execution Time: 0.0544816 seconds
+Number of Threads Used: 1
+Memory Used: 2.9800872802734375 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+Execution Time: 0.0775011 seconds
+Number of Threads Used: 1
+Memory Used: 2.9600906372070312 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+Execution Time: 0.0757576 seconds
+Number of Threads Used: 1
+Memory Used: 2.960052490234375 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+
+--------------java-simple-reversal--------------------------------------
+
+----------------java-fib-reversal---------------------------------------
+
+Execution Time: 0.0407133 seconds
+Number of Threads Used: 1
+Memory Used: 2.504058837890625 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+Execution Time: 0.0451479 seconds
+Number of Threads Used: 1
+Memory Used: 2.48004150390625 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+Execution Time: 0.0519743 seconds
+Number of Threads Used: 1
+Memory Used: 2.0400238037109375 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+----------------java-fib-reversal---------------------------------------
+
+
+
+
+
+
+--------------php-simple-reversal--------------------------------------
+
+Execution Time: 0.039695024490356 seconds
+Number of Threads Used: 1
+Memory Used: 0.000031 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+Execution Time: 0.032583951950073 seconds
+Number of Threads Used: 1
+Memory Used: 0.000031 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+Execution Time: 0.022754192352295 seconds
+Number of Threads Used: 1
+Memory Used: 0.000031 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+
+--------------php-simple-reversal--------------------------------------
+
+----------------php-fib-reversal---------------------------------------
+
+Execution Time: 0.031687021255493 seconds
+Number of Threads Used: 1
+Memory Used: 0.019950866699219 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+Execution Time: 0.019496917724609 seconds
+Number of Threads Used: 1
+Memory Used: 0.019950866699219 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+Execution Time: 0.020238876342773 seconds
+Number of Threads Used: 1
+Memory Used: 0.019950866699219 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+----------------php-fib-reversal---------------------------------------
+
+
+
+
+
+
+--------------rust-simple-reversal--------------------------------------
+
+Execution Time: 0.942181 seconds
+Number of Threads Used: 1
+Memory Used: 0.406250 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+Execution Time: 1.040725 seconds
+Number of Threads Used: 1
+Memory Used: 0.562500 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+Execution Time: 0.807909 seconds
+Number of Threads Used: 1
+Memory Used: 0.375000 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+
+--------------rust-simple-reversal--------------------------------------
+
+----------------rust-fib-reversal---------------------------------------
+
+Execution Time: 0.826476 seconds
+Number of Threads Used: 1
+Memory Used: 0.445312 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+Execution Time: 0.811461 seconds
+Number of Threads Used: 1
+Memory Used: 1.007812 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+Execution Time: 1.068951 seconds
+Number of Threads Used: 1
+Memory Used: 0.746094 MB
+Total Assignments: 6992
+Total Evaluations: 7985
+
+----------------rust-fib-reversal---------------------------------------
+
+
+
+
+
+
+--------------ruby-simple-reversal--------------------------------------
+
+Execution Time: 4.5105687 seconds
+Number of Threads Used: 1
+Memory Used: 0.322947 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+Execution Time: 3.6740431 seconds
+Number of Threads Used: 1
+Memory Used: 0.322336 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+Execution Time: 4.4828045 seconds
+Number of Threads Used: 1
+Memory Used: 0.322985 MB
+Total Assignments: 10005
+Total Evaluations: 10000
+
+--------------ruby-simple-reversal--------------------------------------
+
+----------------ruby-fib-reversal---------------------------------------
+
+Execution Time: 2.3539985 seconds
+Number of Threads Used: 1
+Memory Used: 1.124306 MB
+Total Assignments: 6992
+Total Evaluations: 8981
+
+Execution Time: 1.9979219 seconds
+Number of Threads Used: 1
+Memory Used: 1.124306 MB
+Total Assignments: 6992
+Total Evaluations: 8981
+
+Execution Time: 2.3479642 seconds
+Number of Threads Used: 1
+Memory Used: 1.124306 MB
+Total Assignments: 6992
+Total Evaluations: 8981
+
+----------------ruby-fib-reversal---------------------------------------
+

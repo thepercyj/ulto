@@ -1,0 +1,25 @@
+# Initialize variables
+x = 10
+y = 20
+
+# Number of iterations
+n = 1000
+i = 0
+
+while i < n:
+    # Assign new values by adding two-digit numbers
+    x += 15
+    x += 20
+    y += 25
+    y += 30
+    print(`forward state x:`, x)
+    print(`forward state y:`, y)
+    # Reverse the state to the previous value
+    rev x
+    print(`reversed state x:`, x)
+    rev y
+    print(`reversed state y:`, y)
+    # Increment the iterator
+    i += 1
+print("final state x:", x)
+print("final state y:", y)

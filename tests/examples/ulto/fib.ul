@@ -3,7 +3,7 @@ b = 1
 fib = a
 fib_list = []
 
-n = 500
+n = 1000
 i = 2
 
 # Generate Fibonacci sequence
@@ -16,7 +16,7 @@ while i < n:
     i += 1
 
 # Reverse and print all values of a until the initial state is reached
-while i == 500:
+while i == 1000:
     rev a
     print(`reversed value of a:`, a)
     rev b
