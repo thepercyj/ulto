@@ -754,7 +754,7 @@ class Interpreter:
         """
         num_threads = threading.active_count()
         execution_time = end_time - start_time
-        with open("./execution_log.txt", "a") as log_file:
+        with open("./logs/execution_log.txt", "a") as log_file:
             log_file.write(f"Execution Details ({datetime.now()}):\n")
             log_file.write(f"Execution Time: {execution_time} seconds\n")
             log_file.write(f"Number of Threads Used: {num_threads}\n")
