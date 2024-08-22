@@ -1,2 +1,0 @@
-[console_scripts]
-ulto = src.main:main
