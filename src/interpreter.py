@@ -847,16 +847,7 @@ class Interpreter:
             return values[index - 1]
         else:
             return None
-
-    def execute_function(self, node):
-        """
-        Executes a function node.
-
-        Args:
-        node (tuple): The function node.
-        """
-        _, func_name, params, body = node
-
+        
     def error(self, message):
         """
         Raises an error with the given message.

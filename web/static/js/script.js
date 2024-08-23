@@ -1,18 +1,9 @@
-// Initialize CodeMirror editor
 var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
     mode: 'python',
     lineNumbers: true,
     theme: 'default'
 });
 
-// Example codes
-const exampleCodes = {
-    example1: `print('Hello, World!')`,
-    example2: `for i in range(5):\n    print('This is loop iteration', i)`,
-    example3: `x = 10\nif x > 5:\n    print('x is greater than 5')\nelse:\n    print('x is not greater than 5')`
-};
-
-// Function to load example code into the editor
  function loadExampleCode(filename) {
         fetch('/load_example/' + filename)
             .then(response => response.text())

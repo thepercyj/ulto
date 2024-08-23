@@ -60,10 +60,10 @@ body {
 
 /* Editor and Output container styling */
 .code-editor, .output {
-    height: 100%; /* Make sure the height is defined */
-    max-height: calc(100% - 60px); /* Adjust the max-height as per your layout */
-    overflow-y: auto; /* Enable vertical scroll if content exceeds height */
-    overflow-x: hidden; /* Hide horizontal overflow */
+    height: 100%;
+    max-height: calc(100% - 60px);
+    overflow-y: auto;
+    overflow-x: hidden;
     border: 1px solid #ccc;
     padding: 10px;
     border-radius: 5px;
@@ -74,7 +74,7 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 20px;
-    height: calc(80vh - 100px); /* Adjust height considering container padding and margins */
+    height: calc(80vh - 100px);
 }
 
 .CodeMirror {
