@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>interpreter module &mdash; Ulto - An Imperative Reversible Programming Language v1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=d29a5c0e"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="semantic_analyser module" href="semantic_analyser.html" />
+    <link rel="prev" title="lexer module" href="lexer.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Ulto - An Imperative Reversible Programming Language
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="lexer.html">lexer module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">interpreter module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#src.interpreter.BreakException"><code class="docutils literal notranslate"><span class="pre">BreakException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.interpreter.Interpreter"><code class="docutils literal notranslate"><span class="pre">Interpreter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.ast"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.ast</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.symbol_table"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.symbol_table</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.history"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.history</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.detailed_history"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.detailed_history</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.assignments"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.assignments</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.evaluations"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.evaluations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.reversals"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.reversals</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.current_step"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.current_step</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.memory_manager"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.memory_manager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.eager_vars"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.eager_vars</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.profiling_data"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.profiling_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.profile_batch_size"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.profile_batch_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.profile_counter"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.profile_counter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.logstack"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.logstack</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.interpreter.Interpreter.Interpreter.lib"><code class="docutils literal notranslate"><span class="pre">Interpreter.Interpreter.lib</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.apply_operator"><code class="docutils literal notranslate"><span class="pre">Interpreter.apply_operator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.collect_profiling_data"><code class="docutils literal notranslate"><span class="pre">Interpreter.collect_profiling_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.detect_eager_vars"><code class="docutils literal notranslate"><span class="pre">Interpreter.detect_eager_vars()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.error"><code class="docutils literal notranslate"><span class="pre">Interpreter.error()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.evaluate_expression"><code class="docutils literal notranslate"><span class="pre">Interpreter.evaluate_expression()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.execute"><code class="docutils literal notranslate"><span class="pre">Interpreter.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.execute_assignment"><code class="docutils literal notranslate"><span class="pre">Interpreter.execute_assignment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.execute_for"><code class="docutils literal notranslate"><span class="pre">Interpreter.execute_for()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.execute_function"><code class="docutils literal notranslate"><span class="pre">Interpreter.execute_function()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.execute_if"><code class="docutils literal notranslate"><span class="pre">Interpreter.execute_if()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.execute_minus_assign"><code class="docutils literal notranslate"><span class="pre">Interpreter.execute_minus_assign()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.execute_node"><code class="docutils literal notranslate"><span class="pre">Interpreter.execute_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.execute_over_assign"><code class="docutils literal notranslate"><span class="pre">Interpreter.execute_over_assign()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.execute_plus_assign"><code class="docutils literal notranslate"><span class="pre">Interpreter.execute_plus_assign()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.execute_print"><code class="docutils literal notranslate"><span class="pre">Interpreter.execute_print()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.execute_reverse"><code class="docutils literal notranslate"><span class="pre">Interpreter.execute_reverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.execute_revtrace"><code class="docutils literal notranslate"><span class="pre">Interpreter.execute_revtrace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.execute_times_assign"><code class="docutils literal notranslate"><span class="pre">Interpreter.execute_times_assign()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.execute_while"><code class="docutils literal notranslate"><span class="pre">Interpreter.execute_while()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.get_memory_usage"><code class="docutils literal notranslate"><span class="pre">Interpreter.get_memory_usage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.get_previous_value"><code class="docutils literal notranslate"><span class="pre">Interpreter.get_previous_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.log_execution_details"><code class="docutils literal notranslate"><span class="pre">Interpreter.log_execution_details()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.print_computation_cost"><code class="docutils literal notranslate"><span class="pre">Interpreter.print_computation_cost()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.profile_assignment"><code class="docutils literal notranslate"><span class="pre">Interpreter.profile_assignment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.profile_if"><code class="docutils literal notranslate"><span class="pre">Interpreter.profile_if()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.profile_node"><code class="docutils literal notranslate"><span class="pre">Interpreter.profile_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.profile_print"><code class="docutils literal notranslate"><span class="pre">Interpreter.profile_print()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.profile_reverse"><code class="docutils literal notranslate"><span class="pre">Interpreter.profile_reverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.profile_revtrace"><code class="docutils literal notranslate"><span class="pre">Interpreter.profile_revtrace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.profile_while"><code class="docutils literal notranslate"><span class="pre">Interpreter.profile_while()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.prune_logstack"><code class="docutils literal notranslate"><span class="pre">Interpreter.prune_logstack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.interpreter.Interpreter.update_profiling_data"><code class="docutils literal notranslate"><span class="pre">Interpreter.update_profiling_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="semantic_analyser.html">semantic_analyser module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parser.html">parser module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">core package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ulto - An Imperative Reversible Programming Language</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">interpreter module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/interpreter.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.interpreter">
+<span id="interpreter-module"></span><h1>interpreter module<a class="headerlink" href="#module-src.interpreter" title="Link to this heading"></a></h1>
+<dl class="py exception">
+<dt class="sig sig-object py" id="src.interpreter.BreakException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.interpreter.</span></span><span class="sig-name descname"><span class="pre">BreakException</span></span><a class="headerlink" href="#src.interpreter.BreakException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.interpreter.</span></span><span class="sig-name descname"><span class="pre">Interpreter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ast</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Interpreter</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An interpreter for the Ulto programming language.</p>
+<p>The <cite>Interpreter</cite> class is responsible for executing the abstract syntax tree (AST) of an Ulto program.
+It manages variable assignments, control flow (e.g., loops, conditionals), arithmetic operations, and
+reversible operations. The interpreter also handles memory management, profiling, and logging of
+execution details. Additionally, it interfaces with a C library for optimized arithmetic and compound
+assignment operations through foreign function interface (FFI) using <cite>ctypes</cite>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.ast">
+<span class="sig-name descname"><span class="pre">ast</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.ast" title="Link to this definition"></a></dt>
+<dd><p>The abstract syntax tree representing the program.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.symbol_table">
+<span class="sig-name descname"><span class="pre">symbol_table</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.symbol_table" title="Link to this definition"></a></dt>
+<dd><p>A sorted dictionary used to store variable names and their associated values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>SortedDict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.history">
+<span class="sig-name descname"><span class="pre">history</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.history" title="Link to this definition"></a></dt>
+<dd><p>A list to keep track of execution history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.detailed_history">
+<span class="sig-name descname"><span class="pre">detailed_history</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.detailed_history" title="Link to this definition"></a></dt>
+<dd><p>A list to store detailed execution history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.assignments">
+<span class="sig-name descname"><span class="pre">assignments</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.assignments" title="Link to this definition"></a></dt>
+<dd><p>A counter for the number of assignments performed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.evaluations">
+<span class="sig-name descname"><span class="pre">evaluations</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.evaluations" title="Link to this definition"></a></dt>
+<dd><p>A counter for the number of expressions evaluated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.reversals">
+<span class="sig-name descname"><span class="pre">reversals</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.reversals" title="Link to this definition"></a></dt>
+<dd><p>A counter for the number of reversals executed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.current_step">
+<span class="sig-name descname"><span class="pre">current_step</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.current_step" title="Link to this definition"></a></dt>
+<dd><p>The current step number in the execution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.memory_manager">
+<span class="sig-name descname"><span class="pre">memory_manager</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.memory_manager" title="Link to this definition"></a></dt>
+<dd><p>An instance of the MemoryManager class for managing memory allocation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="malloc.html#src.core.malloc.MemoryManager" title="src.core.malloc.MemoryManager">MemoryManager</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.eager_vars">
+<span class="sig-name descname"><span class="pre">eager_vars</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.eager_vars" title="Link to this definition"></a></dt>
+<dd><p>A set of variables identified for eager evaluation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.profiling_data">
+<span class="sig-name descname"><span class="pre">profiling_data</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.profiling_data" title="Link to this definition"></a></dt>
+<dd><p>A dictionary to store profiling data for optimizing execution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.profile_batch_size">
+<span class="sig-name descname"><span class="pre">profile_batch_size</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.profile_batch_size" title="Link to this definition"></a></dt>
+<dd><p>The batch size for profiling updates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.profile_counter">
+<span class="sig-name descname"><span class="pre">profile_counter</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.profile_counter" title="Link to this definition"></a></dt>
+<dd><p>A counter to manage profiling updates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.logstack">
+<span class="sig-name descname"><span class="pre">logstack</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.logstack" title="Link to this definition"></a></dt>
+<dd><p>An instance of the LogStack class to manage reversible operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="logstack.html#src.core.logstack.LogStack" title="src.core.logstack.LogStack">LogStack</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.Interpreter.lib">
+<span class="sig-name descname"><span class="pre">lib</span></span><a class="headerlink" href="#src.interpreter.Interpreter.Interpreter.lib" title="Link to this definition"></a></dt>
+<dd><p>A C library loaded for performing arithmetic and compound assignments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.CDLL</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.apply_operator">
+<span class="sig-name descname"><span class="pre">apply_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">op</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.apply_operator" title="Link to this definition"></a></dt>
+<dd><p>Applies an operator to two operands.</p>
+<p>Args:
+op (str): The operator.
+left (int): The left operand.
+right (int): The right operand.</p>
+<p>Returns:
+The result of the operation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.collect_profiling_data">
+<span class="sig-name descname"><span class="pre">collect_profiling_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ast</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.collect_profiling_data" title="Link to this definition"></a></dt>
+<dd><p>Collects profiling data from the AST.</p>
+<p>Args:
+ast (list): The abstract syntax tree.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.detect_eager_vars">
+<span class="sig-name descname"><span class="pre">detect_eager_vars</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.detect_eager_vars" title="Link to this definition"></a></dt>
+<dd><p>Detects eager variables based on the profiling data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.error">
+<span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.error" title="Link to this definition"></a></dt>
+<dd><p>Raises an error with the given message.</p>
+<p>Args:
+message (str): The error message.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.evaluate_expression">
+<span class="sig-name descname"><span class="pre">evaluate_expression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.evaluate_expression" title="Link to this definition"></a></dt>
+<dd><p>Evaluates an expression.</p>
+<p>Args:
+expr (any): The expression to be evaluated.</p>
+<p>Returns:
+The evaluated result.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.execute" title="Link to this definition"></a></dt>
+<dd><p>Executes the AST.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.execute_assignment">
+<span class="sig-name descname"><span class="pre">execute_assignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.execute_assignment" title="Link to this definition"></a></dt>
+<dd><p>Executes an assignment node.</p>
+<p>Args:
+node (tuple): The assignment node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.execute_for">
+<span class="sig-name descname"><span class="pre">execute_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.execute_for" title="Link to this definition"></a></dt>
+<dd><p>Executes a for loop node.</p>
+<p>Args:
+node (tuple): The for loop node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.execute_function">
+<span class="sig-name descname"><span class="pre">execute_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.execute_function" title="Link to this definition"></a></dt>
+<dd><p>Executes a function node.</p>
+<p>Args:
+node (tuple): The function node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.execute_if">
+<span class="sig-name descname"><span class="pre">execute_if</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.execute_if" title="Link to this definition"></a></dt>
+<dd><p>Executes an if node.</p>
+<p>Args:
+node (tuple): The if node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.execute_minus_assign">
+<span class="sig-name descname"><span class="pre">execute_minus_assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.execute_minus_assign" title="Link to this definition"></a></dt>
+<dd><p>Executes a minus assignment operation (<cite>-=</cite>) on a variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> (<em>tuple</em>) – A tuple containing the operation and the variable name, and the value
+to be subtracted. Expected format: (_, var_name, value).</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – If <cite>var_name</cite> is not found in the symbol table.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.execute_node">
+<span class="sig-name descname"><span class="pre">execute_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.execute_node" title="Link to this definition"></a></dt>
+<dd><p>Executes a single node in the AST.</p>
+<p>Args:
+node (tuple): The node to be executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.execute_over_assign">
+<span class="sig-name descname"><span class="pre">execute_over_assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.execute_over_assign" title="Link to this definition"></a></dt>
+<dd><p>Executes a division assignment operation (<cite>/=</cite>) on a variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> (<em>tuple</em>) – A tuple containing the operation and the variable name, and the value
+to be divided. Expected format: (_, var_name, value).</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – If <cite>var_name</cite> is not found in the symbol table.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.execute_plus_assign">
+<span class="sig-name descname"><span class="pre">execute_plus_assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.execute_plus_assign" title="Link to this definition"></a></dt>
+<dd><p>Executes a plus assignment operation (<cite>+=</cite>) on a variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> (<em>tuple</em>) – A tuple containing the operation and the variable name, and the value
+to be added. Expected format: (_, var_name, value).</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – If <cite>var_name</cite> is not found in the symbol table.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.execute_print">
+<span class="sig-name descname"><span class="pre">execute_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.execute_print" title="Link to this definition"></a></dt>
+<dd><p>Executes a print node.</p>
+<p>Args:
+node (tuple): The print node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.execute_reverse">
+<span class="sig-name descname"><span class="pre">execute_reverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.execute_reverse" title="Link to this definition"></a></dt>
+<dd><p>Executes a reverse node.</p>
+<p>Args:
+node (tuple): The reverse node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.execute_revtrace">
+<span class="sig-name descname"><span class="pre">execute_revtrace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.execute_revtrace" title="Link to this definition"></a></dt>
+<dd><p>Executes a revtrace node.</p>
+<p>Args:
+node (tuple): The revtrace node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.execute_times_assign">
+<span class="sig-name descname"><span class="pre">execute_times_assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.execute_times_assign" title="Link to this definition"></a></dt>
+<dd><p>Executes a times assignment operation (<cite>*=</cite>) on a variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> (<em>tuple</em>) – A tuple containing the operation and the variable name, and the value
+to be multiplied. Expected format: (_, var_name, value).</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – If <cite>var_name</cite> is not found in the symbol table.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.execute_while">
+<span class="sig-name descname"><span class="pre">execute_while</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.execute_while" title="Link to this definition"></a></dt>
+<dd><p>Executes a while node.</p>
+<p>Args:
+node (tuple): The while node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.get_memory_usage">
+<span class="sig-name descname"><span class="pre">get_memory_usage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.get_memory_usage" title="Link to this definition"></a></dt>
+<dd><p>Gets the current memory usage.</p>
+<p>Returns:
+float: The memory usage in megabytes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.get_previous_value">
+<span class="sig-name descname"><span class="pre">get_previous_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.get_previous_value" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the previous value of a variable from the log stack by index.</p>
+<p>Args:
+var_name (str): The name of the variable.
+index (int): The index of the state to retrieve.</p>
+<p>Returns:
+The previous value of the variable or None if not found.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.log_execution_details">
+<span class="sig-name descname"><span class="pre">log_execution_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.log_execution_details" title="Link to this definition"></a></dt>
+<dd><p>Logs the execution details to a file.</p>
+<p>Args:
+start_time (float): The start time of the execution.
+end_time (float): The end time of the execution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.print_computation_cost">
+<span class="sig-name descname"><span class="pre">print_computation_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.print_computation_cost" title="Link to this definition"></a></dt>
+<dd><p>Prints the computation cost of the execution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.profile_assignment">
+<span class="sig-name descname"><span class="pre">profile_assignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.profile_assignment" title="Link to this definition"></a></dt>
+<dd><p>Profiles an assignment node.</p>
+<p>Args:
+node (tuple): The assignment node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.profile_if">
+<span class="sig-name descname"><span class="pre">profile_if</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.profile_if" title="Link to this definition"></a></dt>
+<dd><p>Profiles an if node.</p>
+<p>Args:
+node (tuple): The if node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.profile_node">
+<span class="sig-name descname"><span class="pre">profile_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.profile_node" title="Link to this definition"></a></dt>
+<dd><p>Profiles a single node in the AST. For now, handling conditionals, assignments, reversals and prints.</p>
+<p>Args:
+node (tuple): The node to be profiled.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.profile_print">
+<span class="sig-name descname"><span class="pre">profile_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.profile_print" title="Link to this definition"></a></dt>
+<dd><p>Profiles a print node.</p>
+<p>Args:
+node (tuple): The print node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.profile_reverse">
+<span class="sig-name descname"><span class="pre">profile_reverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.profile_reverse" title="Link to this definition"></a></dt>
+<dd><p>Profiles a reverse node.</p>
+<p>Args:
+node (tuple): The reverse node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.profile_revtrace">
+<span class="sig-name descname"><span class="pre">profile_revtrace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.profile_revtrace" title="Link to this definition"></a></dt>
+<dd><p>Profiles a revtrace node.</p>
+<p>Args:
+node (tuple): The revtrace node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.profile_while">
+<span class="sig-name descname"><span class="pre">profile_while</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.profile_while" title="Link to this definition"></a></dt>
+<dd><p>Profiles a while node.</p>
+<p>Args:
+node (tuple): The while node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.prune_logstack">
+<span class="sig-name descname"><span class="pre">prune_logstack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.prune_logstack" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.interpreter.Interpreter.update_profiling_data">
+<span class="sig-name descname"><span class="pre">update_profiling_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.interpreter.Interpreter.update_profiling_data" title="Link to this definition"></a></dt>
+<dd><p>Updates the profiling data with the given expression.</p>
+<p>Args:
+expr (any): The expression to be profiled.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lexer.html" class="btn btn-neutral float-left" title="lexer module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="semantic_analyser.html" class="btn btn-neutral float-right" title="semantic_analyser module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Aman Thapa Magar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

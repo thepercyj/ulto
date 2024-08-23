@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Documentation | Ulto Project{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="heading"><h1>Documentation</h1></div>
+    <p>This documentation provides an in-depth guide to the Ulto programming language. Use the navigation links below to explore detailed sections on Variables and Data, Control Structures, and Reversibility in Ulto. Each section includes grammar rules, code examples, and comprehensive descriptions to help you understand the key features of the language.</p>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('vardata') }}">Variables and Data</a></li>
+            <li><a href="{{ url_for('control') }}">Control Structures</a></li>
+            <li><a href="{{ url_for('reverse') }}">Reversibility</a></li>
+        </ul>
+
+    </nav>
+    <p>For detailed docstring for the codebase you can visit on the link below</p>
+    <ul>
+        <li><a href="{{ url_for('docstrings') }}">Ulto Docstrings</a></li>
+    </ul>
+    <h2>Reversibility</h2>
+    <p>One of the defining features of the Ulto programming language is its support for reversible computing. Reversibility allows the program's state to be traced back to previous states, providing a powerful mechanism for debugging, rollback, and state management. This is achieved primarily through the <code>rev</code> and <code>revtrace</code> tokens.</p>
+
+    <h3>1. The `rev` Token</h3>
+    <p>The <code>rev</code> token enables the reversal of a variable's state to its immediately previous value. This operation is sequential, ensuring that the program can only be reversed in the exact order the operations were performed, preserving the integrity of the execution flow.</p>
+
+    <div class="example">
+        <h4>Example: Using `rev`</h4>
+        <pre><code>x = 10
+x += 5
+print(x)  # Outputs: 15
+rev x
+print(x)  # Outputs: 10</code></pre>
+        <p>In this example, the variable <code>x</code> is incremented by 5, and then the <code>rev</code> operation reverts <code>x</code> to its original value of 10.</p>
+    </div>
+
+    <div class="grammar">
+        <h4>Grammar Rule: Reverse Statement</h4>
+        <pre><code>reverse
+    : REV ID
+    ;</code></pre>
+        <p>This grammar rule defines the structure of a <code>rev</code> statement in Ulto. It shows that the <code>rev</code> keyword is followed by an identifier, which specifies the variable to be reversed.</p>
+    </div>
+
+    <h3>2. The `revtrace` Token</h3>
+    <p>The <code>revtrace</code> token allows you to view the history of a variable's state over multiple operations. However, unlike <code>rev</code>, <code>revtrace</code> does not revert the variable to a previous state; it only prints the past states for inspection. The actual reversal still requires the use of <code>rev</code>.</p>
+
+    <div class="example">
+        <h4>Example: Using `revtrace`</h4>
+        <pre><code>x = 5
+x += 10
+x *= 2
+print(x)  # Outputs: 30
+revtrace x 2
+# Outputs the state 2 steps back: 5
+rev x
+print(x)  # Outputs: 20 (Reverts one step back to x *= 2)</code></pre>
+        <p>Here, <code>revtrace x 2</code> prints the value of <code>x</code> from two operations ago, but <code>rev x</code> only reverts the variable to its previous one at a time. This is done to ensure no variables are destroyed during the process and all reversal are sequential without missing a step to ensuring intergrity for reversibility.</p>
+    </div>
+
+    <div class="grammar">
+        <h4>Grammar Rule: Revtrace Statement</h4>
+        <pre><code>revtrace
+    : REVTRACE ID NUMBER
+    ;</code></pre>
+        <p>This grammar rule defines the structure of a <code>revtrace</code> statement. It includes the <code>revtrace</code> keyword followed by an identifier and a number, indicating how far back in the history to trace.</p>
+    </div>
+
+    <h3>3. Preserving State with LogStack</h3>
+    <p>Unlike traditional programming languages, where variable assignment is often destructive (overwriting the previous value), Ulto uses a log stack to preserve every state change. This allows the program to safely reverse operations without losing any information.</p>
+
+    <div class="example">
+        <h4>Example: Non-destructive Assignment</h4>
+        <pre><code>y = 50
+y /= 2
+rev y
+print(y)  # Outputs: 50</code></pre>
+        <p>Even though <code>y</code> was divided by 2, the original value is preserved in the log stack. The <code>rev</code> operation restores <code>y</code> to 50.</p>
+    </div>
+
+    <h3>4. Pruning Operations</h3>
+    <p>To manage memory efficiently, Ulto includes pruning operations that selectively remove older states from the log stack. This ensures that the program doesn't consume excessive memory while still retaining the ability to reverse recent operations.</p>
+
+    <div class="example">
+        <h4>Example: Pruning in Action</h4>
+        <pre><code>z = 100
+z += 25
+z -= 10
+rev z
+print(z)  # Outputs: 115 (reverts the last operation)</code></pre>
+        <p>Here, <code>rev z</code> reverts the last operation, but older states may be pruned if memory constraints require it. The program ensures that the most recent operations can still be reversed.</p>
+    </div>
+</div>
+
+{% endblock %}
+

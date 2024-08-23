@@ -7,11 +7,11 @@ sqrt_estimate = b
 # Square root calculation
 while a != b:
     a = b
-    b = (n // a + a) // 2
+    b = (n // a + a) // 2 # using integer division to avoid floating numbers
     sqrt_estimate = b
 
 # Print the estimated square root
-print(`Estimated square root is:`, b)
+print(`Square root is:`, b)
 
 # Determine the number of states to reverse
 num_states = 3
@@ -24,6 +24,6 @@ for i in range(1, num_states + 1):
 # Reversing the states using a loop
 for i in range(1, num_states + 1):
     rev a
-    print(`reversed state of a after step`, i, `:`, a)
     rev b
-    print(`reversed state of b after step`, i, `:`, b)
+    print(`reversed state of a:`, a)
+    print(`reversed state of b:`, b)

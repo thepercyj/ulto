@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Home | Ulto Project{% endblock %}
+{% block content %}
+<div class="heading">
+    <h1>The Ulto Project</h1>
+</div>
+<div class="content">
+    <p>
+        Ulto Project is an innovative leap towards the future of sustainable computing. Our mission is to revolutionize how programming languages interact with hardware, emphasizing energy efficiency without compromising performance. With global energy demands on the rise, the Information and Communication Technology (ICT) sector is under increasing pressure to minimize its carbon footprint. Ulto addresses this challenge head-on.
+    </p>
+
+    <p>
+        Ulto is a reversible imperative programming language designed with the principles of energy conservation at its core. By leveraging techniques such as memory management profiling, lazy evaluations, and minimalistic design, Ulto ensures that every line of code you write contributes to a greener future.
+    </p>
+
+    <h4>Features</h4>
+    <ul>
+        <li><strong>Energy Efficiency:</strong> Ulto is built to reduce the energy costs associated with software execution, making it an ideal choice for sustainable computing.</li>
+        <li><strong>Performance-Focused:</strong> Despite its focus on energy efficiency, Ulto does not compromise on performance. It balances the trade-offs between speed, memory usage, and power consumption.</li>
+    </ul>
+
+    <p>Join us in building a sustainable future, one line of code at a time.</p>
+
+    <a href="{{ url_for('about') }}">Learn More About Ulto</a>
+</div>
+
+{% endblock %}}

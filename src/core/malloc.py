@@ -5,6 +5,18 @@
 # Aman Thapa Magar <at719@sussex.ac.uk>
 
 class MemoryManager:
+    """
+    A class to manage memory allocation with a specified limit.
+
+    The `MemoryManager` class allows for tracking and limiting memory allocation within a program.
+    It provides methods to allocate and deallocate memory, ensuring that the allocated memory does
+    not exceed a predefined limit. The class also allows querying the currently allocated memory
+    and the remaining available memory.
+
+    Attributes:
+        limit (int): The memory limit in bytes.
+        allocated_memory (int): The total amount of currently allocated memory in bytes.
+    """
     def __init__(self, limit_mb):
         """
         Initializes the MemoryManager with a memory limit.

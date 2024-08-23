@@ -5,6 +5,18 @@
 # Aman Thapa Magar <at719@sussex.ac.uk>
 
 class SemanticAnalyser:
+    """
+    A semantic analyzer for the Ulto programming language.
+
+    The `SemanticAnalyser` class is responsible for checking the abstract syntax tree (AST) of an Ulto program
+    for semantic correctness. It ensures that variables are declared before use, validates operations and
+    control structures, and tracks the program's symbol table. The class processes various nodes in the AST,
+    including assignments, loops, conditionals, and expressions, to enforce the language's semantic rules.
+
+    Attributes:
+        ast (list): The abstract syntax tree to be analyzed.
+        symbol_table (dict): A symbol table to track variable declarations and their values during analysis.
+    """
     def __init__(self, ast):
         """
         Initializes the SemanticAnalyser with the given AST.
@@ -268,6 +280,7 @@ class SemanticAnalyser:
         # Remove the loop variable from the symbol table after the loop is processed
         if not shadowed:
             del self.symbol_table[var_name]
+
     def process_while(self, node):
         """
         Processes a while node.

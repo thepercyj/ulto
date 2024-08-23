@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Documentation | Ulto Project{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="heading"><h1>Documentation</h1></div>
+    <p>This documentation provides an in-depth guide to the Ulto programming language. Use the navigation links above to explore detailed sections on Variables and Data, Control Structures, and Reversibility in Ulto. Each section includes grammar rules, code examples, and comprehensive descriptions to help you understand the key features of the language.</p>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('vardata') }}">Variables and Data</a></li>
+            <li><a href="{{ url_for('control') }}">Control Structures</a></li>
+            <li><a href="{{ url_for('reverse') }}">Reversibility</a></li>
+        </ul>
+
+    </nav>
+    <p>For detailed docstring for the codebase you can visit on the link below</p>
+    <ul>
+        <li><a href="{{ url_for('docstrings') }}">Ulto Docstrings</a></li>
+    </ul>
+</div>
+
+{% endblock %}
+

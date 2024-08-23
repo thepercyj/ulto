@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}About | Ulto Project{% endblock %}
+
+{% block content %}
+<div class="heading">
+    <h1>About Ulto</h1>
+</div>
+<div class="content">
+
+    <p>
+        It is estimated that around 2% of global greenhouse emissions are accounted by Information and Communications Technology (ICT) sector which will grow up to 14% along with digital data sizing up to 175 zettabytes. Thus, large amounts of energy are required to store and process these data which inadvertently influence the climate change and the entire green future the world is moving towards. Recent trends shows that the current ICT market is shifting progressively to cloud based solutions.  A paper published by Buyya, Ilager and Arroba stated that there are eight million active data centres worldwide and they are projected to grow over 12% per year. Most of them rely on fossil fuel-based energy (i.e., except for green data centres) resulting in high carbon footprints and are projected to contribute up to 5.5% of the world’s carbon emission by 2025. Among these 50% energy is solely consumed by equipment operation and cooling. The remaining are consumed based on what type of software applications we are running on. There are evidences that shows the energy dissipations based on software build is also a major factor in increasing energy consumption alongside hardware. Popular languages like Python consume lot of energy but make coding easier for programmers as it allows you to express syntaxes in fewer lines of code. However, different interpreters/compilers impact energy use accordingly. Therefore, the Ulto Project was born out of the necessity to address the growing energy demands of the ICT sector. With an increasing global focus on sustainability, it is crucial to innovate at the intersection of software and hardware. Ulto is our answer to this challenge.
+    </p>
+
+    <h4>What is Ulto?</h4>
+    <p>
+        Ulto is a reversible imperative programming language that adheres to Landauer’s principle of data conservation. It is designed to showcase that computing can be both powerful and energy-efficient. The language allows for computations to be run forward and backward, ensuring no information is lost, which minimizes heat dissipation and energy use.
+    </p>
+
+
+    <h4>Key Features of Ulto:</h4>
+    <ul>
+        <li><strong>Reversible Computing:</strong> Ulto supports reversible computing, where operations can be undone, saving energy and reducing waste.</li>
+        <li><strong>Smart Evaluations:</strong> By delaying computation until necessary and analyzing code performance, Ulto maximizes efficiency.</li>
+        <li><strong>Works on Minimal Hardware:</strong> Ulto is optimized for low-power and hardware spec devices, making it ideal for both small-scale and large-scale applications.</li>
+        <li><strong>Profiling and Logging:</strong> Ulto’s runtime environment includes tools for profiling, which helps you monitor the performance and memory usage of your program. Detailed logs are kept of each step and reversal, allowing for easier debugging and analysis.</li>
+        <li><strong>Pruning Operations:</strong> Ulto also supports pruning, a process that removes old or unnecessary data from the LogStack. This helps manage memory usage effectively, especially in long-running programs.</li>
+        <li><strong>Energy Efficient:</strong> Ulto main motive was to be energy efficient while performing same tasks at high levels, the language offers performance through the use of hybrid compiler/interpreter approach where most operative tasks are handled by precompiled file written in C and remaining via optimised interpreter.</li>
+    </ul>
+
+    <h4>Let's Meet Up for a Coffee.</h4>
+    <p>
+        The Ulto Project is developed by Aman Thapa Magar who is passionate about making computing more energy-efficient.
+    </p>
+
+</div>
+{% endblock %}

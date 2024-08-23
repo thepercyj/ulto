@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Documentation | Ulto Project{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="heading"><h1>Documentation</h1></div>
+    <p>This documentation provides an in-depth guide to the Ulto programming language. Use the navigation links below to explore detailed sections on Variables and Data, Control Structures, and Reversibility in Ulto. Each section includes grammar rules, code examples, and comprehensive descriptions to help you understand the key features of the language.</p>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('vardata') }}">Variables and Data</a></li>
+            <li><a href="{{ url_for('control') }}">Control Structures</a></li>
+            <li><a href="{{ url_for('reverse') }}">Reversibility</a></li>
+        </ul>
+
+    </nav>
+    <p>For detailed docstring for the codebase you can visit on the link below</p>
+    <ul>
+        <li><a href="{{ url_for('docstrings') }}">Ulto Docstrings</a></li>
+    </ul>
+    <h2>Control Structures</h2>
+    <p>Control structures in Ulto allow developers to direct the flow of program execution. These structures include conditionals, loops, and other branching mechanisms that enable dynamic decision-making within the code.</p>
+
+    <h3>1. Conditionals</h3>
+    <p>Ulto supports conditional statements using <code>if</code>, <code>elif</code>, and <code>else</code>. These statements allow the program to execute certain blocks of code based on the evaluation of expressions.</p>
+
+    <div class="example">
+        <h4>Example: If-Else Statement</h4>
+        <pre><code>if x > 10:
+    y = 20
+elif x == 10:
+    y = 15
+else:
+    y = 5</code></pre>
+        <p>This code evaluates the value of <code>x</code> and assigns a value to <code>y</code> based on the condition. If <code>x</code> is greater than 10, <code>y</code> becomes 20; if <code>x</code> equals 10, <code>y</code> becomes 15; otherwise, <code>y</code> is set to 5.</p>
+    </div>
+
+    <div class="grammar">
+        <h4>Grammar Rule: If Statement</h4>
+        <pre><code>ifStatement
+    : IF expression block (ELIF expression block)* (ELSE block)?
+    ;</code></pre>
+        <p>This rule defines the structure of an <code>if</code> statement in Ulto. It shows that an <code>if</code> statement can include multiple <code>elif</code> branches and an optional <code>else</code> branch, each associated with a block of code.</p>
+    </div>
+
+    <h3>2. Loops</h3>
+    <p>Loops in Ulto allow the execution of a block of code multiple times. The language provides both <code>for</code> and <code>while</code> loops to handle repetitive tasks.</p>
+
+    <div class="example">
+        <h4>Example: For Loop</h4>
+        <pre><code>for i in range(0, 5):
+    print(i)</code></pre>
+        <p>This loop iterates from 0 to 4, printing each number. The <code>range</code> function generates the sequence of numbers.</p>
+    </div>
+
+    <div class="grammar">
+        <h4>Grammar Rule: For Loop</h4>
+        <pre><code>forLoop
+    : FOR ID IN iterable block
+    ;</code></pre>
+        <p>This rule defines the structure of a <code>for</code> loop in Ulto. The loop iterates over an <code>iterable</code> object, executing a block of code for each item in the sequence.</p>
+    </div>
+
+    <div class="example">
+        <h4>Example: While Loop</h4>
+        <pre><code>x = 5
+while x > 0:
+    print(x)
+    x -= 1</code></pre>
+        <p>This loop continues to execute as long as <code>x</code> is greater than 0. It prints the value of <code>x</code> and then decrements it by 1 in each iteration.</p>
+    </div>
+
+    <div class="grammar">
+        <h4>Grammar Rule: While Loop</h4>
+        <pre><code>whileLoop
+    : WHILE expression block
+    ;</code></pre>
+        <p>This rule defines the structure of a <code>while</code> loop in Ulto. The loop repeatedly executes a block of code as long as the specified expression evaluates to true.</p>
+    </div>
+
+    <h3>3. Combining Conditionals and Loops</h3>
+    <p>Ulto allows conditionals and loops to be combined for more complex control flow. This can be useful in scenarios where the loop's execution depends on a condition.</p>
+
+    <div class="example">
+        <h4>Example: Nested Conditionals and Loops</h4>
+        <pre><code>for i in range(1, 11):
+    if i % 2 == 0:
+        print(f"{i} is even")
+    else:
+        print(f"{i} is odd")</code></pre>
+        <p>This code iterates through numbers 1 to 10. It checks if each number is even or odd and prints the appropriate message.</p>
+    </div>
+</div>
+
+{% endblock %}
+

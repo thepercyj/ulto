@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Codespace | Ulto Project{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="heading">
+       <h1>Ulto Codespace</h1>
+    </div>
+    <p>
+        Ulto Codespace comes with basic package of example sets which you can try it out. The codespace is built in order to make people familiar with the language syntaxes and understand how to create programs. Feel free to explore.
+    </p>
+    <div class="dropdown">
+        <button class="btn btn-danger" onclick="clearCode()">Clear</button>
+        <button class="btn btn-success" onclick="runCode()">Run Code</button>
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            Examples
+        </button>
+
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="#" onclick="loadExampleCode('reversal.ul')">Assignment Reversal</a></li>
+            <li><a class="dropdown-item" href="#" onclick="loadExampleCode('simple.ul')">Simple Sequence Reversal </a></li>
+            <li><a class="dropdown-item" href="#" onclick="loadExampleCode('fib.ul')">Fibonacci Sequence </a></li>
+            <li><a class="dropdown-item" href="#" onclick="loadExampleCode('primefac.ul')">Prime Factorisation </a></li>
+            <li><a class="dropdown-item" href="#" onclick="loadExampleCode('squareroot.ul')">Square Root </a></li>
+        </ul>
+    </div>
+    <div class="editor-output-container">
+        <div class="code-editor">
+            <h3>Source Code:</h3>
+            <textarea id="code">print(`olleh, dlrow!`)</textarea>
+        </div>
+
+        <div class="output">
+            <h3>Output:</h3>
+            <pre id="output"></pre>
+        </div>
+    </div>
+</div>
+{% endblock %}

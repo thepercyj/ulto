@@ -22,6 +22,33 @@ class BreakException(Exception):
 
 
 class Interpreter:
+    class Interpreter:
+        """
+        An interpreter for the Ulto programming language.
+
+        The `Interpreter` class is responsible for executing the abstract syntax tree (AST) of an Ulto program.
+        It manages variable assignments, control flow (e.g., loops, conditionals), arithmetic operations, and
+        reversible operations. The interpreter also handles memory management, profiling, and logging of
+        execution details. Additionally, it interfaces with a C library for optimized arithmetic and compound
+        assignment operations through foreign function interface (FFI) using `ctypes`.
+
+        Attributes:
+            ast (list): The abstract syntax tree representing the program.
+            symbol_table (SortedDict): A sorted dictionary used to store variable names and their associated values.
+            history (list): A list to keep track of execution history.
+            detailed_history (list): A list to store detailed execution history.
+            assignments (int): A counter for the number of assignments performed.
+            evaluations (int): A counter for the number of expressions evaluated.
+            reversals (int): A counter for the number of reversals executed.
+            current_step (int): The current step number in the execution.
+            memory_manager (MemoryManager): An instance of the MemoryManager class for managing memory allocation.
+            eager_vars (set): A set of variables identified for eager evaluation.
+            profiling_data (dict): A dictionary to store profiling data for optimizing execution.
+            profile_batch_size (int): The batch size for profiling updates.
+            profile_counter (int): A counter to manage profiling updates.
+            logstack (LogStack): An instance of the LogStack class to manage reversible operations.
+            lib (ctypes.CDLL): A C library loaded for performing arithmetic and compound assignments.
+        """
     def __init__(self, ast):
         """
         Initializes the ExecutionEngine with the given AST.
@@ -340,6 +367,16 @@ class Interpreter:
         self.symbol_table[var_name] = lazy_value
 
     def execute_plus_assign(self, node):
+        """
+        Executes a plus assignment operation (`+=`) on a variable.
+
+        Args:
+            node (tuple): A tuple containing the operation and the variable name, and the value
+                          to be added. Expected format: (_, var_name, value).
+
+        Raises:
+            KeyError: If `var_name` is not found in the symbol table.
+        """
         _, var_name, value = node
         current_value = self.symbol_table.get(var_name)
         if isinstance(current_value, LazyEval):
@@ -357,6 +394,16 @@ class Interpreter:
             self.symbol_table[var_name] = LazyEval(new_value, self)
 
     def execute_minus_assign(self, node):
+        """
+        Executes a minus assignment operation (`-=`) on a variable.
+
+        Args:
+            node (tuple): A tuple containing the operation and the variable name, and the value
+                          to be subtracted. Expected format: (_, var_name, value).
+
+        Raises:
+            KeyError: If `var_name` is not found in the symbol table.
+        """
         _, var_name, value = node
         current_value = self.symbol_table.get(var_name)
         if isinstance(current_value, LazyEval):
@@ -374,6 +421,16 @@ class Interpreter:
             self.symbol_table[var_name] = LazyEval(new_value, self)
 
     def execute_times_assign(self, node):
+        """
+        Executes a times assignment operation (`*=`) on a variable.
+
+        Args:
+            node (tuple): A tuple containing the operation and the variable name, and the value
+                          to be multiplied. Expected format: (_, var_name, value).
+
+        Raises:
+            KeyError: If `var_name` is not found in the symbol table.
+        """
         _, var_name, value = node
         current_value = self.symbol_table.get(var_name)
         if isinstance(current_value, LazyEval):
@@ -391,6 +448,16 @@ class Interpreter:
             self.symbol_table[var_name] = LazyEval(new_value, self)
 
     def execute_over_assign(self, node):
+        """
+         Executes a division assignment operation (`/=`) on a variable.
+
+         Args:
+             node (tuple): A tuple containing the operation and the variable name, and the value
+                           to be divided. Expected format: (_, var_name, value).
+
+         Raises:
+             KeyError: If `var_name` is not found in the symbol table.
+         """
         _, var_name, value = node
         current_value = self.symbol_table.get(var_name)
         if isinstance(current_value, LazyEval):
@@ -598,33 +665,118 @@ class Interpreter:
         if isinstance(right, LazyEval):
             right = right.evaluate()
         if op == 'plus':
-            return self.lib.execute_add(left, right)
+            try:
+                result = self.lib.execute_add(left, right)
+                if result is None:
+                    raise ValueError("execute_add returned None")
+            except Exception:
+                result = left + right
+            return result
         elif op == 'minus':
-            return self.lib.execute_sub(left, right)
+            try:
+                result = self.lib.execute_sub(left, right)
+                if result is None:
+                    raise ValueError("execute_sub returned None")
+            except Exception:
+                result = left - right
+            return result
         elif op == 'times':
-            return self.lib.execute_mul(left, right)
+            try:
+                result = self.lib.execute_mul(left, right)
+                if result is None:
+                    raise ValueError("execute_mul returned None")
+            except Exception:
+                result = left * right
+            return result
         elif op == 'over':
-            return self.lib.execute_div(left, right)
+            try:
+                result = self.lib.execute_div(left, right)
+                if result is None:
+                    raise ValueError("execute_div returned None")
+            except Exception:
+                result = left / right
+            return result
         elif op == 'modulo':
-            return self.lib.execute_modulo(left, right)
+            try:
+                result = self.lib.execute_modulo(left, right)
+                if result is None:
+                    raise ValueError("execute_modulo returned None")
+            except Exception:
+                result = left % right
+            return result
         elif op == 'int_div':
-            return self.lib.execute_int_div(left, right)
+            try:
+                result = self.lib.execute_int_div(left, right)
+                if result is None:
+                    raise ValueError("execute_int_div returned None")
+            except Exception:
+                result = left // right
+            return result
         elif op == 'eq':
-            return self.lib.execute_eq(left, right)
+            try:
+                result = self.lib.execute_eq(left, right)
+                if result is None:
+                    raise ValueError("execute_eq returned None")
+            except Exception:
+                result = left == right
+            return result
         elif op == 'neq':
-            return self.lib.execute_neq(left, right)
+            try:
+                result = self.lib.execute_neq(left, right)
+                if result is None:
+                    raise ValueError("execute_neq returned None")
+            except Exception:
+                result = left != right
+            return result
         elif op == 'lt':
-            return self.lib.execute_lt(left, right)
+            try:
+                result = self.lib.execute_lt(left, right)
+                if result is None:
+                    raise ValueError("execute_lt returned None")
+            except Exception:
+                result = left < right
+            return result
         elif op == 'gt':
-            return self.lib.execute_gt(left, right)
+            try:
+                result = self.lib.execute_gt(left, right)
+                if result is None:
+                    raise ValueError("execute_gt returned None")
+            except Exception:
+                result = left > right
+            return result
         elif op == 'lte':
-            return self.lib.execute_lte(left, right)
+            try:
+                result = self.lib.execute_lte(left, right)
+                if result is None:
+                    raise ValueError("execute_lte returned None")
+            except Exception:
+                result = left <= right
+            return result
         elif op == 'gte':
-            return self.lib.execute_gte(left, right)
+            try:
+                result = self.lib.execute_gte(left, right)
+                if result is None:
+                    raise ValueError("execute_gte returned None")
+            except Exception:
+                result = left >= right
+            return result
         elif op == 'and':
-            return self.lib.execute_and(left, right)
+            try:
+                result = self.lib.execute_and(left, right)
+
+                if result is None:
+                    raise ValueError("execute_and returned None")
+            except Exception:
+                result = left and right
+            return result
         elif op == 'or':
-            return self.lib.execute_or(left, right)
+            try:
+                result = self.lib.execute_or(left, right)
+                if result is None:
+                    raise ValueError("execute_or returned None")
+            except Exception:
+                result = left or right
+            return result
         else:
             self.error(f'Unknown operator: {op}')
 

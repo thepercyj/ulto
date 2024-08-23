@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>parser module &mdash; Ulto - An Imperative Reversible Programming Language v1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=d29a5c0e"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="core package" href="core.html" />
+    <link rel="prev" title="semantic_analyser module" href="semantic_analyser.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Ulto - An Imperative Reversible Programming Language
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="lexer.html">lexer module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interpreter.html">interpreter module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="semantic_analyser.html">semantic_analyser module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">parser module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#src.parser.Parser"><code class="docutils literal notranslate"><span class="pre">Parser</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.tokens"><code class="docutils literal notranslate"><span class="pre">Parser.tokens</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.current_token"><code class="docutils literal notranslate"><span class="pre">Parser.current_token</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.pos"><code class="docutils literal notranslate"><span class="pre">Parser.pos</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.advance"><code class="docutils literal notranslate"><span class="pre">Parser.advance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.consume"><code class="docutils literal notranslate"><span class="pre">Parser.consume()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.consume_value"><code class="docutils literal notranslate"><span class="pre">Parser.consume_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.error"><code class="docutils literal notranslate"><span class="pre">Parser.error()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.parse"><code class="docutils literal notranslate"><span class="pre">Parser.parse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.parse_assignment"><code class="docutils literal notranslate"><span class="pre">Parser.parse_assignment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.parse_block"><code class="docutils literal notranslate"><span class="pre">Parser.parse_block()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.parse_break"><code class="docutils literal notranslate"><span class="pre">Parser.parse_break()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.parse_expression"><code class="docutils literal notranslate"><span class="pre">Parser.parse_expression()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.parse_for"><code class="docutils literal notranslate"><span class="pre">Parser.parse_for()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.parse_if"><code class="docutils literal notranslate"><span class="pre">Parser.parse_if()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.parse_primary_expression"><code class="docutils literal notranslate"><span class="pre">Parser.parse_primary_expression()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.parse_print"><code class="docutils literal notranslate"><span class="pre">Parser.parse_print()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.parse_reverse"><code class="docutils literal notranslate"><span class="pre">Parser.parse_reverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.parse_revtrace"><code class="docutils literal notranslate"><span class="pre">Parser.parse_revtrace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.parse_statement"><code class="docutils literal notranslate"><span class="pre">Parser.parse_statement()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.parse_while"><code class="docutils literal notranslate"><span class="pre">Parser.parse_while()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.parser.Parser.peek_next_token"><code class="docutils literal notranslate"><span class="pre">Parser.peek_next_token()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">core package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ulto - An Imperative Reversible Programming Language</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">parser module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/parser.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.parser">
+<span id="parser-module"></span><h1>parser module<a class="headerlink" href="#module-src.parser" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.parser.Parser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.parser.</span></span><span class="sig-name descname"><span class="pre">Parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokens</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A parser for the Ulto programming language.</p>
+<p>The <cite>Parser</cite> class is responsible for converting a list of tokens, generated by the lexical analyzer,
+into an abstract syntax tree (AST) representing the structure of the Ulto program. It supports various
+statements such as assignments, loops, conditional branches, and more, and ensures that the syntax of
+the input program is valid according to the language’s grammar.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.parser.Parser.tokens">
+<span class="sig-name descname"><span class="pre">tokens</span></span><a class="headerlink" href="#src.parser.Parser.tokens" title="Link to this definition"></a></dt>
+<dd><p>The list of tokens to be parsed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.parser.Parser.current_token">
+<span class="sig-name descname"><span class="pre">current_token</span></span><a class="headerlink" href="#src.parser.Parser.current_token" title="Link to this definition"></a></dt>
+<dd><p>The current token being processed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.parser.Parser.pos">
+<span class="sig-name descname"><span class="pre">pos</span></span><a class="headerlink" href="#src.parser.Parser.pos" title="Link to this definition"></a></dt>
+<dd><p>The current position in the token list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.advance">
+<span class="sig-name descname"><span class="pre">advance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.advance" title="Link to this definition"></a></dt>
+<dd><p>Advances to the next token.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.consume">
+<span class="sig-name descname"><span class="pre">consume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.consume" title="Link to this definition"></a></dt>
+<dd><p>Consumes the current token if it matches the expected type.</p>
+<p>Args:
+token_type (str): The expected token type.</p>
+<p>Returns:
+str: The value of the consumed token.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.consume_value">
+<span class="sig-name descname"><span class="pre">consume_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.consume_value" title="Link to this definition"></a></dt>
+<dd><p>Consumes a value token (number, identifier, or string).</p>
+<p>Returns:
+The consumed value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.error">
+<span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.error" title="Link to this definition"></a></dt>
+<dd><p>Raises a syntax error with the current token.</p>
+<p>Raises:
+Exception: Indicates a syntax error.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.parse" title="Link to this definition"></a></dt>
+<dd><p>Parses the tokens into an abstract syntax tree (AST).</p>
+<p>Returns:
+list: The parsed AST.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.parse_assignment">
+<span class="sig-name descname"><span class="pre">parse_assignment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.parse_assignment" title="Link to this definition"></a></dt>
+<dd><p>Parses an assignment statement.</p>
+<p>Returns:
+tuple: The parsed assignment node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.parse_block">
+<span class="sig-name descname"><span class="pre">parse_block</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.parse_block" title="Link to this definition"></a></dt>
+<dd><p>Parses a block of statements.</p>
+<p>Returns:
+list: The list of parsed statements.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.parse_break">
+<span class="sig-name descname"><span class="pre">parse_break</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.parse_break" title="Link to this definition"></a></dt>
+<dd><p>Parses a break statement.</p>
+<p>Returns:
+tuple: The parsed break node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.parse_expression">
+<span class="sig-name descname"><span class="pre">parse_expression</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.parse_expression" title="Link to this definition"></a></dt>
+<dd><p>Parses an expression.</p>
+<p>Returns:
+tuple: The parsed expression node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.parse_for">
+<span class="sig-name descname"><span class="pre">parse_for</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.parse_for" title="Link to this definition"></a></dt>
+<dd><p>Parses a for loop statement.</p>
+<p>Returns:
+tuple: The parsed for loop node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.parse_if">
+<span class="sig-name descname"><span class="pre">parse_if</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.parse_if" title="Link to this definition"></a></dt>
+<dd><p>Parses an if statement.</p>
+<p>Returns:
+tuple: The parsed if node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.parse_primary_expression">
+<span class="sig-name descname"><span class="pre">parse_primary_expression</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.parse_primary_expression" title="Link to this definition"></a></dt>
+<dd><p>Parses a primary expression (number, identifier, or parenthesized expression).
+Returns:
+The parsed expression.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.parse_print">
+<span class="sig-name descname"><span class="pre">parse_print</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.parse_print" title="Link to this definition"></a></dt>
+<dd><p>Parses a print statement.</p>
+<p>Returns:
+tuple: The parsed print node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.parse_reverse">
+<span class="sig-name descname"><span class="pre">parse_reverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.parse_reverse" title="Link to this definition"></a></dt>
+<dd><p>Parses a reverse statement.</p>
+<p>Returns:
+tuple: The parsed reverse node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.parse_revtrace">
+<span class="sig-name descname"><span class="pre">parse_revtrace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.parse_revtrace" title="Link to this definition"></a></dt>
+<dd><p>Parses a revtrace statement.</p>
+<p>Returns:
+tuple: The parsed revtrace node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.parse_statement">
+<span class="sig-name descname"><span class="pre">parse_statement</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.parse_statement" title="Link to this definition"></a></dt>
+<dd><p>Parses a single statement.</p>
+<p>Returns:
+tuple: The parsed statement node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.parse_while">
+<span class="sig-name descname"><span class="pre">parse_while</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.parse_while" title="Link to this definition"></a></dt>
+<dd><p>Parses a while statement.</p>
+<p>Returns:
+tuple: The parsed while node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.parser.Parser.peek_next_token">
+<span class="sig-name descname"><span class="pre">peek_next_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.parser.Parser.peek_next_token" title="Link to this definition"></a></dt>
+<dd><p>Peeks at the next token without consuming it.</p>
+<p>Returns:
+tuple: The next token.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="semantic_analyser.html" class="btn btn-neutral float-left" title="semantic_analyser module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="core.html" class="btn btn-neutral float-right" title="core package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Aman Thapa Magar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -6,6 +6,20 @@
 
 
 class LazyEval:
+    """
+    A class for lazy evaluation of expressions.
+
+    The `LazyEval` class is used to defer the evaluation of an expression until its value is actually needed.
+    This can be useful in scenarios where evaluating the expression is expensive and might not be required
+    unless certain conditions are met. The class ensures that the expression is evaluated only once, caching
+    the result for subsequent accesses.
+
+    Attributes:
+        expression (any): The expression to be lazily evaluated.
+        engine (ExecutionEngine): The engine used to evaluate the expression.
+        value (any): The evaluated value of the expression, initialized to `None`.
+        evaluated (bool): A flag indicating whether the expression has been evaluated, initialized to `False`.
+    """
     def __init__(self, expression, engine):
         """
         Initializes the LazyEval instance.

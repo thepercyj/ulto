@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Documentation | Ulto Project{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="heading"><h1>Documentation</h1></div>
+    <p>This documentation provides an in-depth guide to the Ulto programming language. Use the navigation links below to explore detailed sections on Variables and Data, Control Structures, and Reversibility in Ulto. Each section includes grammar rules, code examples, and comprehensive descriptions to help you understand the key features of the language.</p>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('vardata') }}">Variables and Data</a></li>
+            <li><a href="{{ url_for('control') }}">Control Structures</a></li>
+            <li><a href="{{ url_for('reverse') }}">Reversibility</a></li>
+        </ul>
+
+    </nav>
+    <p>For detailed docstring for the codebase you can visit on the link below</p>
+    <ul>
+        <li><a href="{{ url_for('docstrings') }}">Ulto Docstrings</a></li>
+    </ul>
+    <h2>Variables and Data</h2>
+    <p>In Ulto, variables and data handling are designed to support both traditional and reversible programming paradigms. The language's approach to memory management ensures that variables can be assigned new values without losing their previous states, making it easier to revert operations if needed.</p>
+
+    <h3>1. Variables</h3>
+    <p>Variables in Ulto are declared and assigned values using typical syntax. However, unlike conventional languages where variable assignment is a destructive process, Ulto preserves the history of each variable's state using a log stack.</p>
+
+    <div class="example">
+        <h4>Example: Variable Assignment</h4>
+        <pre><code>x = 10
+x += 5
+print(x)  # Outputs: 15</code></pre>
+        <p>In this example, <code>x</code> is first assigned the value <code>10</code> and then incremented by <code>5</code>. The current value of <code>x</code> is <code>15</code>.</p>
+    </div>
+
+    <div class="grammar">
+        <h4>Grammar Rule: Assignment</h4>
+        <pre><code>assignment
+    : ID ASSIGN expression
+    | ID PLUS_ASSIGN expression
+    | ID MINUS_ASSIGN expression
+    | ID TIMES_ASSIGN expression
+    | ID OVER_ASSIGN expression
+    ;</code></pre>
+        <p>This grammar rule defines how variable assignments are structured in Ulto. It shows that an assignment consists of an identifier (<code>ID</code>), followed by an assignment operator (<code>=</code>, <code>+=</code>, etc.), and an expression.</p>
+    </div>
+
+    <h3>2. Data Types</h3>
+    <p>Ulto supports various data types, including numbers and strings. The language's syntax for working with these data types is straightforward, making it easy to perform operations on variables.</p>
+
+    <div class="example">
+        <h4>Example: Data Types</h4>
+        <pre><code>num = 42
+text = "Hello, World!"
+print(num)  # Outputs: 42
+print(text)  # Outputs: Hello, World!</code></pre>
+        <p>Here, <code>num</code> is an integer, and <code>text</code> is a string. Both variables are printed, showing their respective values.</p>
+    </div>
+
+    <div class="grammar">
+        <h4>Grammar Rule: Primary Expressions</h4>
+        <pre><code>primaryExpression
+    : NUMBER
+    | STRING
+    | TRUE
+    | FALSE
+    | ID
+    ;</code></pre>
+        <p>This grammar rule specifies how primary expressions are formed, including numbers, strings, booleans, and identifiers. These are the basic building blocks for more complex expressions.</p>
+    </div>
+
+    <h3>3. Memory Management</h3>
+    <p>Memory management in Ulto is enhanced by the use of a log stack, which records every change made to a variable. This ensures that no information is destroyed during the execution of a program, allowing for easy reversal of operations.</p>
+
+    <div class="example">
+        <h4>Example: Non-destructive Assignment</h4>
+        <pre><code>y = 50
+y /= 2
+print(y)  # Outputs: 25</code></pre>
+        <p>Even though <code>y</code> is divided by 2, the original value is preserved in the log stack, allowing for potential reversal if needed.</p>
+        <br>
+    </div>
+</div>
+
+{% endblock %}
+
