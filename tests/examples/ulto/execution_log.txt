@@ -1,0 +1,8 @@
+Execution Details (2024-08-23 17:50:35.415160):
+Execution Time: 0.002088308334350586 seconds
+Number of Threads Used: 1
+Assignments: 4
+Evaluations: 21
+Reversals: 1
+Memory Usage: 0.0003108978271484375 MB
+

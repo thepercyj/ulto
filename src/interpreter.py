@@ -293,7 +293,8 @@ class Interpreter:
         """
         Detects eager variables based on the profiling data.
         """
-        # threshold set to 3 to avoid inaccuracy of dealing hotspots, can shift it to 5 for reducing overhead but for now is good. can be tweaked based on nature of application.
+        # threshold set to 3 to avoid inaccuracy of dealing hotspots, can shift it to 5 for reducing overhead but for
+        # now is good. can be tweaked based on nature of application.
         threshold = 3
         for var, count in self.profiling_data.items():
             if count > threshold:
@@ -344,7 +345,8 @@ class Interpreter:
         self.assignments += 1
         _, var_name, value = node
 
-        # Considering hybrid approach since, some programs developed can have circular dependency. Hence, based on the source code profile eager and lazy accordingly.
+        # Considering hybrid approach since, some programs developed can have circular dependency. Hence, based on the
+        # source code profile eager and lazy accordingly.
         # for eg: "i = i + 1" meets the requirement of circular dependency causing infinite loops if lazily evaluated.
         if var_name in self.eager_vars:
             evaluated_value = self.evaluate_expression(value)
@@ -821,42 +823,6 @@ class Interpreter:
         else:
             print(f"No state found for {var_name} at index {index}")
 
-    def get_previous_value(self, var_name, index):
-        """
-        Retrieves the previous value of a variable from the log stack by index.
-
-        Args:
-        var_name (str): The name of the variable.
-        index (int): The index of the state to retrieve.
-
-        Returns:
-        The previous value of the variable or None if not found.
-        """
-        values = []
-        while len(values) < index:
-            previous_value = self.logstack.pop(var_name)
-            if previous_value is None:
-                break
-            values.append(previous_value)
-
-        # Restoring the log stack state to tracepath assignment history
-        for value in reversed(values):
-            self.logstack.push(var_name, value)
-
-        if index <= len(values):
-            return values[index - 1]
-        else:
-            return None
-        
-    def error(self, message):
-        """
-        Raises an error with the given message.
-
-        Args:
-        message (str): The error message.
-        """
-        raise Exception(f'Execution error: {message}')
-
     def prune_logstack(self):
         self.logstack.prune()
         if self.logstack.get_memory_usage() > 50:
@@ -897,7 +863,7 @@ class Interpreter:
         """
         num_threads = threading.active_count()
         execution_time = end_time - start_time
-        with open("./logs/execution_log.txt", "a") as log_file:
+        with open("execution_log.txt", "a") as log_file:
             log_file.write(f"Execution Details ({datetime.now()}):\n")
             log_file.write(f"Execution Time: {execution_time} seconds\n")
             log_file.write(f"Number of Threads Used: {num_threads}\n")
@@ -906,3 +872,12 @@ class Interpreter:
             log_file.write(f"Reversals: {self.reversals}\n")
             log_file.write(f"Memory Usage: {self.get_memory_usage()} MB\n")
             log_file.write("\n")
+
+    def error(self, message):
+        """
+        Raises an error with the given message.
+
+        Args:
+        message (str): The error message.
+        """
+        raise Exception(f'Execution error: {message}')

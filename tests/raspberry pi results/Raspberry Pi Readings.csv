@@ -1,0 +1,43 @@
+﻿,Laptop,,,
+Languages,Memory Reading 1 (simple),Memory Reading 2 (simple),Memory Reading 3 (simple),Average Memory Reading in MB (simple)
+Ulto,0.00057,0.00057,0.00057,0.00057
+Python,0.00048,0.00048,0.00048,0.00048
+Java,2.98,2.96,2.96,2.97
+Go,0.11,0.11,0.11,0.11
+PHP,0.000031,0.000031,0.000031,0.000031
+Rust,0.41,0.56,0.38,0.45
+Ruby,0.32,0.32,0.32,0.32
+,,,,
+,,,,
+,,,,
+,Laptop,,,
+Languages,Memory Reading 1 (fib),Memory Reading 2 (fib),Memory Reading 3 (fib),Average Memory Reading in MB (fib)
+Ulto,0.00087,0.00087,0.00087,0.00087
+Python,0.092,0.092,0.092,0.092
+Java,2.50,2.48,2.04,2.34
+Go,0.83,0.83,0.83,0.83
+PHP,0.020,0.020,0.020,0.020
+Rust,0.45,1.01,0.75,0.73
+Ruby,1.12,1.12,1.12,1.12
+,,,,
+Raspberry PI,Raspberry PI,,,
+Languages,Memory Reading 1 (simple),Memory Reading 2 (simple),Memory Reading 3 (simple),Average Memory Reading in MB (simple)
+Ulto,0.00049,0.00049,0.00049,0.00049
+Python,0.00063,0.00063,0.00063,0.00063
+Java,1.59,1.59,1.59,1.59
+Go,0.11,0.11,0.11,0.11
+PHP,0.00031,0.00031,0.00031,0.00031
+Rust,0.04,0.24,0.29,0.19
+Ruby,0.38,0.38,0.38,0.38
+,,,,
+,,,,
+,,,,
+Raspberry PI,Raspberry PI,,,
+Languages,Memory Reading 1 (fib),Memory Reading 2 (fib),Memory Reading 3 (fib),Average Memory Reading in MB (fib)
+Ulto,0.00074,0.00074,,0.00074
+Python,0.092,0.092,0.092,0.092
+Java,0.73,0.83,0.83,0.80
+Go,0.83,0.83,0.83,0.83
+PHP,0.020,0.020,0.020,0.020
+Rust,0.27,0.28,0.14,0.23
+Ruby,0.08,0.08,0.08,0.08

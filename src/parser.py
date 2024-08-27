@@ -245,7 +245,6 @@ class Parser:
         self.consume('IF')
         condition = self.parse_expression()
 
-        # Handle compound conditions
         while self.current_token and self.current_token[0] in ['AND', 'OR']:
             op = self.current_token[0].lower()
             self.advance()
@@ -258,15 +257,13 @@ class Parser:
         elif_branches = []
         false_branch = []
 
-        # Handle elif branches
         while self.current_token and self.current_token[0] == 'ELIF':
-            self.advance()  # Move past 'elif'
+            self.advance()
             elif_condition = self.parse_expression()
             self.consume('COLON')
             elif_branch = self.parse_block()
             elif_branches.append((elif_condition, elif_branch))
 
-        # Handle else branch
         if self.current_token and self.current_token[0] == 'ELSE':
             self.consume('ELSE')
             self.consume('COLON')
@@ -287,7 +284,7 @@ class Parser:
         self.consume('IN')
 
         if self.current_token[0] == 'LBRACKET':
-            iterable = self.consume_value()  # This will consume the entire list
+            iterable = self.consume_value()
 
         elif self.current_token[0] == 'RANGE':
             self.consume('RANGE')
@@ -302,15 +299,14 @@ class Parser:
                     self.consume('COMMA')
                     step_value = self.parse_expression()
             else:
-                end_value = start_value  # Treat single parameter as range(end)
-                start_value = ('NUMBER', 0)  # Default start at 0
+                end_value = start_value
+                start_value = ('NUMBER', 0)
                 step_value = None
 
             self.consume('RPAREN')
             iterable = ('range', start_value, end_value, step_value)
 
         else:
-            # Assume it's a variable holding an iterable
             iterable = self.parse_expression()
 
         self.consume('COLON')
