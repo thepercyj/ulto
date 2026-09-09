@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory
+from datetime import date
 import os
 from src.lexer import tokenize
 from src.parser import Parser
@@ -6,6 +7,21 @@ from src.semantic_analyser import SemanticAnalyser
 from src.interpreter import Interpreter
 
 app = Flask(__name__)
+
+
+@app.context_processor
+def inject_current_year():
+    """
+    Makes the current year available to every template.
+
+    The footer's copyright year was being edited by hand, which is why it read
+    2024 in one place and 2025 in another.
+
+    Returns:
+    dict: The year, for templates to render.
+    """
+    return {'current_year': date.today().year}
+
 
 SAMPLE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tests/examples')
 
