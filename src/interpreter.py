@@ -4,6 +4,7 @@
 #
 # Aman Thapa Magar <at719@sussex.ac.uk>
 
+import io
 import os
 import sys
 import time
@@ -210,17 +211,8 @@ class Interpreter:
         self.coalescing_eligible = frozenset()
         self.coalesced_bindings = set()
 
-        # Determining the OS family
-        system = platform.system()
         # loading machine compiled arithmetic and compound assignment file.
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-
-        if system == "Windows":
-            lib_path = os.path.join(script_dir, 'operations.dll')
-        else:  # If Linux or other Unix-like systems
-            lib_path = os.path.join(script_dir, 'liboperations.so')
-
-        self.lib = ctypes.CDLL(lib_path)
+        self.lib = ctypes.CDLL(self.locate_operations_library())
 
         # Here, arithmetic and compound assignments are handled via C compiler through FFI using ctypes
         self.lib.execute_add.argtypes = [ctypes.c_int, ctypes.c_int]
@@ -289,13 +281,68 @@ class Interpreter:
             for op, (c_name, guard, fallback) in self.COMPOUND_OPERATORS.items()
         }
 
-    def execute(self):
+    def locate_operations_library(self):
+        """
+        Finds the compiled arithmetic library built for the machine in use.
+
+        Builds are shipped for more than one architecture, so the right one is
+        chosen from the running machine rather than assumed. A copy sitting
+        directly beside this file is preferred, which keeps an installed package
+        working, and the per-architecture builds are the fallback.
+
+        Returns:
+        str: The path of the library to load.
+
+        Raises:
+        FileNotFoundError: If no build matches this machine.
+        """
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        windows = platform.system() == "Windows"
+        name = 'operations.dll' if windows else 'liboperations.so'
+        folder = 'Windows' if windows else 'Linux'
+
+        machine = platform.machine().lower()
+        if machine in ('x86_64', 'amd64', 'x64'):
+            architecture = 'x86_64'
+        elif machine in ('aarch64', 'arm64', 'armv8'):
+            architecture = 'ARM_Aarch'
+        else:
+            architecture = None
+
+        candidates = [os.path.join(script_dir, name)]
+        if architecture:
+            candidates.append(os.path.join(script_dir, 'architecture', architecture, folder, name))
+
+        for candidate in candidates:
+            if os.path.isfile(candidate):
+                return candidate
+
+        raise FileNotFoundError(
+            f'No compiled operations library for {platform.system()} on '
+            f'{platform.machine()}. Looked in: ' + ', '.join(candidates))
+
+    def execute(self, capture=False):
         """
         Executes the AST.
+
+        Args:
+        capture (bool): When true, the program's output is collected instead of
+                        being written to stdout. A host embedding the
+                        interpreter, such as the web front end, needs the text
+                        back rather than printed, and under a WSGI server there
+                        may be no usable stdout to print to.
+
+        Returns:
+        str: The program's output. Empty unless `capture` was requested.
         """
-        print("\n~~~~~~~~~~~~~~~~~~~~OUTPUT~~~~~~~~~~~~~~~~~~~~\n")
+        collected = io.StringIO()
+        original_stdout = sys.stdout
+        if capture:
+            sys.stdout = collected
+
         start_time = time.time()
         try:
+            print("\n~~~~~~~~~~~~~~~~~~~~OUTPUT~~~~~~~~~~~~~~~~~~~~\n")
             # collecting profiling data to find hotspots and manage accordingly during runtime.
             self.collect_profiling_data(self.ast)
             # for detecting eager variables that are often used in the source code, preprocessing it at the start of AST execution.
@@ -309,8 +356,15 @@ class Interpreter:
             self.execute_block(self.ast)
         finally:
             end_time = time.time()
-            self.print_computation_cost()
+            # The cost report belongs to the program's output, so it is written
+            # before stdout is handed back.
+            try:
+                self.print_computation_cost()
+            finally:
+                sys.stdout = original_stdout
             self.log_execution_details(start_time, end_time)
+
+        return collected.getvalue()
 
     def collect_profiling_data(self, ast):
         """
@@ -1319,15 +1373,21 @@ class Interpreter:
         """
         num_threads = threading.active_count()
         execution_time = end_time - start_time
-        with open("execution_log.txt", "a") as log_file:
-            log_file.write(f"Execution Details ({datetime.now()}):\n")
-            log_file.write(f"Execution Time: {execution_time} seconds\n")
-            log_file.write(f"Number of Threads Used: {num_threads}\n")
-            log_file.write(f"Assignments: {self.assignments}\n")
-            log_file.write(f"Evaluations: {self.evaluations}\n")
-            log_file.write(f"Reversals: {self.reversals}\n")
-            log_file.write(f"Memory Usage: {self.get_memory_usage()} MB\n")
-            log_file.write("\n")
+        try:
+            with open("execution_log.txt", "a") as log_file:
+                log_file.write(f"Execution Details ({datetime.now()}):\n")
+                log_file.write(f"Execution Time: {execution_time} seconds\n")
+                log_file.write(f"Number of Threads Used: {num_threads}\n")
+                log_file.write(f"Assignments: {self.assignments}\n")
+                log_file.write(f"Evaluations: {self.evaluations}\n")
+                log_file.write(f"Reversals: {self.reversals}\n")
+                log_file.write(f"Memory Usage: {self.get_memory_usage()} MB\n")
+                log_file.write("\n")
+        except OSError:
+            # The log is a convenience, not part of running a program. A server
+            # process with a read-only working directory should still be able to
+            # run code, so a failure to write it is not allowed to fail the run.
+            pass
 
     def error(self, message):
         """

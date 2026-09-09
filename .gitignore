@@ -17,3 +17,7 @@ __pycache__/
 # Build and install artefacts
 build/
 *.egg-info/
+
+# Virtual environments
+venv/
+.venv/

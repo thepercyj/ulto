@@ -64,7 +64,9 @@ def run_code():
 
     interpreter = Interpreter(ast)
     try:
-        output = interpreter.execute()
+        # Captured rather than printed: the browser needs the text back, and a
+        # WSGI server has no console for it to go to.
+        output = interpreter.execute(capture=True)
     except Exception as e:
         output = f"Error: {str(e)}"
 
