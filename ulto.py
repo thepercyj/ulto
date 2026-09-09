@@ -48,8 +48,19 @@ def reverse():
 
 
 @app.route('/docstrings')
+@app.route('/docstrings/index')
 def docstrings():
+    # Search indexes the front page under the name "index", so the result links
+    # it builds ask for /docstrings/index.
     return render_template('html/index.html')
+
+
+@app.route('/docstrings/searchindex.js')
+def searchindex():
+    # The search page asks for this alongside itself, so it has to answer on the
+    # /docstrings/ path rather than from the static directory.
+    return send_from_directory(
+        os.path.join(app.root_path, 'templates', 'html'), 'searchindex.js')
 
 
 @app.route('/docstrings/genindex')

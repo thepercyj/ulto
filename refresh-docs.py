@@ -29,6 +29,10 @@ BUILD = ROOT / 'docs' / 'build' / 'html'
 TEMPLATES = ROOT / 'templates' / 'html'
 STATIC = ROOT / 'static' / '_static'
 
+# The URL prefix the generated pages are served under, which search uses to
+# build links and to fetch pages when summarising a result.
+DOCS_ROOT = '/docstrings/'
+
 # Each generated page is reachable through a route in ulto.py rather than by
 # filename, so links between pages are rewritten to name the route instead.
 PAGE_ROUTES = {
@@ -97,6 +101,10 @@ def rewrite(html):
         return f'href="{{{{ url_for(\'{route}\') }}}}{anchor}"'
 
     html = re.sub(r'href="([a-z_-]+\.html)(#[^"]*)?"', page_link, html)
+
+    # Search builds URLs from this root at runtime. Left as "./" it resolves
+    # against whichever page is open, which is not where the pages are served.
+    html = html.replace('data-content_root="./"', f'data-content_root="{DOCS_ROOT}"')
     return html
 
 
@@ -129,8 +137,20 @@ def install():
 
     shutil.copytree(BUILD / '_static', STATIC)
 
+    # Search appends these suffixes when turning an indexed page name into a
+    # URL. The pages are served by route rather than by filename, so the
+    # suffixes are cleared and "interpreter" resolves to /docstrings/interpreter
+    # instead of a .html file that does not exist.
+    options = STATIC / 'documentation_options.js'
+    text = options.read_text(encoding='utf-8')
+    for key in ('FILE_SUFFIX', 'LINK_SUFFIX'):
+        # Anchored, or LINK_SUFFIX would also match inside SOURCELINK_SUFFIX.
+        text = re.sub(rf"\b{key}: '[^']*',", f"{key}: '',", text)
+    options.write_text(text, encoding='utf-8')
+
     print(f'  installed {installed} pages into {TEMPLATES.relative_to(ROOT)}')
     print(f'  installed assets into {STATIC.relative_to(ROOT)}')
+    print('  cleared search URL suffixes in documentation_options.js')
 
 
 def check():
