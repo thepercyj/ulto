@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>trace module &mdash; Ulto - An Imperative Reversible Programming Language v1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='_static/pygments.css') }}" />
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='_static/css/theme.css') }}" />
+
+  
+      <script src="{{ url_for('static', filename='_static/jquery.js') }}"></script>
+      <script src="{{ url_for('static', filename='_static/_sphinx_javascript_frameworks_compat.js') }}"></script>
+      <script src="{{ url_for('static', filename='_static/documentation_options.js') }}"></script>
+      <script src="{{ url_for('static', filename='_static/doctools.js') }}"></script>
+      <script src="{{ url_for('static', filename='_static/sphinx_highlight.js') }}"></script>
+    <script src="{{ url_for('static', filename='_static/js/theme.js') }}"></script>
+    <link rel="index" title="Index" href="{{ url_for('genindex') }}" />
+    <link rel="search" title="Search" href="{{ url_for('search') }}" />
+    <link rel="prev" title="malloc module" href="{{ url_for('malloc') }}" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="{{ url_for('docstrings') }}" class="icon icon-home">
+            Ulto - An Imperative Reversible Programming Language
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="{{ url_for('lexer') }}">lexer module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="{{ url_for('interpreter') }}">interpreter module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="{{ url_for('semantic_analyser') }}">semantic_analyser module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="{{ url_for('parser') }}">parser module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="{{ url_for('core') }}">core package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="{{ url_for('core') }}#modules">Modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="{{ url_for('lazyeval') }}">lazyeval module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="{{ url_for('logstack') }}">logstack module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="{{ url_for('malloc') }}">malloc module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">trace module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.core.trace.ExecutionTrace"><code class="docutils literal notranslate"><span class="pre">ExecutionTrace</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="{{ url_for('core') }}#module-src.core">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="{{ url_for('docstrings') }}">Ulto - An Imperative Reversible Programming Language</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="{{ url_for('docstrings') }}" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="{{ url_for('core') }}">core package</a></li>
+      <li class="breadcrumb-item active">trace module</li>
+      <li class="wy-breadcrumbs-aside">
+            
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.core.trace">
+<span id="trace-module"></span><h1>trace module<a class="headerlink" href="#module-src.core.trace" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.core.trace.ExecutionTrace">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.core.trace.</span></span><span class="sig-name descname"><span class="pre">ExecutionTrace</span></span><a class="headerlink" href="#src.core.trace.ExecutionTrace" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An ordered record of every state change, so execution can be walked backwards.</p>
+<p>The per-variable stacks in LogStack answer “what was this variable before?”,
+but they carry no ordering between variables, so on their own they cannot say
+which statements belonged to the branch that actually ran, or how many times
+a loop went round. The trace supplies that ordering: reversing a block is
+simply unwinding every event recorded after the mark taken when the block
+started, newest first. The branch taken never has to be re-derived from the
+condition, which is what makes reversal deterministic even when the branch
+body overwrote the variables the condition was testing.</p>
+<p>Events take one of two forms:</p>
+<blockquote>
+<div><p>(‘value’, var_name, old_value)    restore the value that was replaced
+(‘delta’, var_name, op, operand)  apply the inverse of the operation</p>
+</div></blockquote>
+<p>A <cite>delta</cite> event inverts the operation that produced it, so it never stores
+the value it replaced. That is cheaper whenever the replaced value is larger
+than the operand, and it is the form a reversible target would run without
+erasing anything.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.trace.ExecutionTrace.events">
+<span class="sig-name descname"><span class="pre">events</span></span><a class="headerlink" href="#src.core.trace.ExecutionTrace.events" title="Link to this definition"></a></dt>
+<dd><p>The recorded events, oldest first.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.trace.ExecutionTrace.timestamps">
+<span class="sig-name descname"><span class="pre">timestamps</span></span><a class="headerlink" href="#src.core.trace.ExecutionTrace.timestamps" title="Link to this definition"></a></dt>
+<dd><p>When each event was recorded, parallel to <cite>events</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.trace.ExecutionTrace.consumed">
+<span class="sig-name descname"><span class="pre">consumed</span></span><a class="headerlink" href="#src.core.trace.ExecutionTrace.consumed" title="Link to this definition"></a></dt>
+<dd><p>Whether each event has already been undone.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.trace.ExecutionTrace.last_pruned">
+<span class="sig-name descname"><span class="pre">last_pruned</span></span><a class="headerlink" href="#src.core.trace.ExecutionTrace.last_pruned" title="Link to this definition"></a></dt>
+<dd><p>The last time the trace was pruned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.core.trace.ExecutionTrace.consume">
+<span class="sig-name descname"><span class="pre">consume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.core.trace.ExecutionTrace.consume" title="Link to this definition"></a></dt>
+<dd><p>Marks the event at a position as undone.</p>
+<p>Events are marked rather than removed so that every position handed out
+earlier stays valid, and so <cite>revtrace</cite> can still walk what happened.</p>
+<p>Args:
+position (int): The position to mark.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.core.trace.ExecutionTrace.get_memory_usage">
+<span class="sig-name descname"><span class="pre">get_memory_usage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.core.trace.ExecutionTrace.get_memory_usage" title="Link to this definition"></a></dt>
+<dd><p>Calculates the memory usage of the trace.</p>
+<p>Returns:
+float: The total memory usage of the trace in megabytes (MB).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.core.trace.ExecutionTrace.has_pending">
+<span class="sig-name descname"><span class="pre">has_pending</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mark</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.core.trace.ExecutionTrace.has_pending" title="Link to this definition"></a></dt>
+<dd><p>Reports whether anything recorded after a mark is still to be undone.</p>
+<p>Args:
+mark (int): The position to check from.</p>
+<p>Returns:
+bool: True if there is at least one outstanding event after the mark.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.core.trace.ExecutionTrace.is_consumed">
+<span class="sig-name descname"><span class="pre">is_consumed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.core.trace.ExecutionTrace.is_consumed" title="Link to this definition"></a></dt>
+<dd><p>Reports whether the event at a position has already been undone.</p>
+<p>Args:
+position (int): The position to check.</p>
+<p>Returns:
+bool: True if the event has been undone.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.core.trace.ExecutionTrace.mark">
+<span class="sig-name descname"><span class="pre">mark</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.core.trace.ExecutionTrace.mark" title="Link to this definition"></a></dt>
+<dd><p>Returns the current position in the trace.</p>
+<p>A mark taken before a statement runs is what <cite>reverse_to</cite> later unwinds
+back to, which is how a whole block reverses as one unit.</p>
+<p>Returns:
+int: The current end of the trace.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.core.trace.ExecutionTrace.pending_since">
+<span class="sig-name descname"><span class="pre">pending_since</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mark</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.core.trace.ExecutionTrace.pending_since" title="Link to this definition"></a></dt>
+<dd><p>Lists the events recorded after a mark that are still to be undone.</p>
+<p>Args:
+mark (int): The position to unwind back to.</p>
+<p>Returns:
+list: Positions of the outstanding events, newest first.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.core.trace.ExecutionTrace.prune">
+<span class="sig-name descname"><span class="pre">prune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">retention_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.core.trace.ExecutionTrace.prune" title="Link to this definition"></a></dt>
+<dd><p>Releases the values held by events that have already been undone.</p>
+<p>Only consumed events are pruned. An outstanding event is the sole record
+of how to get back to a previous state, so discarding one would destroy
+reversibility, which is the erasure the language exists to avoid. An
+event that has already been reversed has no such duty, so its payload can
+be released once it is older than the retention time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>retention_time</strong> (<em>int</em><em>, </em><em>optional</em>) – The age in seconds past which a
+consumed event’s payload is released. Defaults to 50,000.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.core.trace.ExecutionTrace.record">
+<span class="sig-name descname"><span class="pre">record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.core.trace.ExecutionTrace.record" title="Link to this definition"></a></dt>
+<dd><p>Appends an event to the trace.</p>
+<p>Args:
+event (tuple): The event to record.</p>
+<p>Returns:
+int: The position the event was recorded at.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="{{ url_for('malloc') }}" class="btn btn-neutral float-left" title="malloc module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Aman Thapa Magar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

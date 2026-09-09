@@ -102,6 +102,11 @@ def logstack():
     return render_template('html/logstack.html')
 
 
+@app.route('/docstrings/trace')
+def trace():
+    return render_template('html/trace.html')
+
+
 @app.route('/run', methods=['POST'])
 def run_code():
     code = request.json.get('code', '')

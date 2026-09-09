@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -5,23 +7,20 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>malloc module &mdash; Ulto - An Imperative Reversible Programming Language v1.0.1 documentation</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='_static/pygments.css') }}" />
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='_static/css/theme.css') }}" />
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='_static/pygments.css') }}" />
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='_static/css/theme.css') }}" />
 
-
-    <!--[if lt IE 9]>
-    <script src="{{ url_for('static', filename='_static/js/html5shiv.min.js') }}"></script>
-    <![endif]-->
-
-    <script src="{{ url_for('static', filename='_static/jquery.js') }}"></script>
-    <script src="{{ url_for('static', filename='_static/_sphinx_javascript_frameworks_compat.js') }}"></script>
-    <script src="{{ url_for('static', filename='_static/documentation_options.js') }}"></script>
-    <script src="{{ url_for('static', filename='_static/doctools.js') }}"></script>
-    <script src="{{ url_for('static', filename='_static/sphinx_highlight.js') }}"></script>
+  
+      <script src="{{ url_for('static', filename='_static/jquery.js') }}"></script>
+      <script src="{{ url_for('static', filename='_static/_sphinx_javascript_frameworks_compat.js') }}"></script>
+      <script src="{{ url_for('static', filename='_static/documentation_options.js') }}"></script>
+      <script src="{{ url_for('static', filename='_static/doctools.js') }}"></script>
+      <script src="{{ url_for('static', filename='_static/sphinx_highlight.js') }}"></script>
     <script src="{{ url_for('static', filename='_static/js/theme.js') }}"></script>
     <link rel="index" title="Index" href="{{ url_for('genindex') }}" />
     <link rel="search" title="Search" href="{{ url_for('search') }}" />
-    <link rel="prev" title="logstack module" href="{{ url_for('logstack') }}" />
+    <link rel="next" title="trace module" href="{{ url_for('trace') }}" />
+    <link rel="prev" title="logstack module" href="{{ url_for('logstack') }}" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -36,7 +35,7 @@
             Ulto - An Imperative Reversible Programming Language
           </a>
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="{{ url_for('search') }}" method="get">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -57,6 +56,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#src.core.malloc.MemoryManager"><code class="docutils literal notranslate"><span class="pre">MemoryManager</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="{{ url_for('trace') }}">trace module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="{{ url_for('core') }}#module-src.core">Module contents</a></li>
@@ -80,17 +80,20 @@
       <li><a href="{{ url_for('docstrings') }}" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="{{ url_for('core') }}">core package</a></li>
       <li class="breadcrumb-item active">malloc module</li>
+      <li class="wy-breadcrumbs-aside">
+            
+      </li>
   </ul>
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="malloc-module">
-<h1>malloc module<a class="headerlink" href="#malloc-module" title="Link to this heading"></a></h1>
-<dl class="py class" id="module-src.core.malloc">
+  <section id="module-src.core.malloc">
+<span id="malloc-module"></span><h1>malloc module<a class="headerlink" href="#module-src.core.malloc" title="Link to this heading"></a></h1>
+<dl class="py class">
 <dt class="sig sig-object py" id="src.core.malloc.MemoryManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.core.malloc.</span></span><span class="sig-name descname"><span class="pre">MemoryManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit_mb</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.core.malloc.MemoryManager" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.core.malloc.</span></span><span class="sig-name descname"><span class="pre">MemoryManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit_mb</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.core.malloc.MemoryManager" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A class to manage memory allocation with a specified limit.</p>
 <p>The <cite>MemoryManager</cite> class allows for tracking and limiting memory allocation within a program.
@@ -162,6 +165,7 @@ int: The remaining memory in bytes.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="{{ url_for('logstack') }}" class="btn btn-neutral float-left" title="logstack module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="{{ url_for('trace') }}" class="btn btn-neutral float-right" title="trace module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
