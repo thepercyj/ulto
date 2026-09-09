@@ -1,5 +1,5 @@
 logstack module
-==============
+===============
 
 .. automodule:: src.core.logstack
    :members:
