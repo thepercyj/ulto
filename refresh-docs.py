@@ -91,16 +91,17 @@ def rewrite(html):
         lambda m: f'{m.group(1)}="{{{{ url_for(\'static\', filename=\'_static/{m.group(2)}\') }}}}"',
         html)
 
-    # Links between pages name a route. Any anchor on the end is kept.
+    # Links between pages name a route. Any anchor on the end is kept. This has
+    # to cover the search form's action as well as ordinary links: the form on
+    # every page posts to search.html, which is not a URL the site answers on.
     def page_link(match):
-        route = PAGE_ROUTES.get(match.group(1))
+        attribute, page, anchor = match.group(1), match.group(2), match.group(3)
+        route = PAGE_ROUTES.get(page)
         if route is None:
             return match.group(0)
-        # A page linked without an anchor leaves group(2) unset.
-        anchor = match.group(2) or ''
-        return f'href="{{{{ url_for(\'{route}\') }}}}{anchor}"'
+        return f'{attribute}="{{{{ url_for(\'{route}\') }}}}{anchor or ""}"'
 
-    html = re.sub(r'href="([a-z_-]+\.html)(#[^"]*)?"', page_link, html)
+    html = re.sub(r'(href|action)="([a-z_-]+\.html)(#[^"]*)?"', page_link, html)
 
     # Search builds URLs from this root at runtime. Left as "./" it resolves
     # against whichever page is open, which is not where the pages are served.
@@ -160,7 +161,10 @@ def check():
     problems = []
     for page in sorted(TEMPLATES.glob('*.html')):
         text = page.read_text(encoding='utf-8')
-        for match in re.findall(r'(?:href|src)="(?!\{\{|#|http|mailto:)([^"]+)"', text):
+        # `action` is checked alongside the link attributes, since the search
+        # form pointing at a file rather than a route is exactly the kind of
+        # reference that renders fine and then 404s when used.
+        for match in re.findall(r'(?:href|src|action)="(?!\{\{|#|http|mailto:)([^"]+)"', text):
             problems.append(f'{page.name}: {match}')
     if problems:
         print('  unrouted references left behind:')
