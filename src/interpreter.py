@@ -286,9 +286,11 @@ class Interpreter:
         Finds the compiled arithmetic library built for the machine in use.
 
         Builds are shipped for more than one architecture, so the right one is
-        chosen from the running machine rather than assumed. A copy sitting
-        directly beside this file is preferred, which keeps an installed package
-        working, and the per-architecture builds are the fallback.
+        chosen from the running machine rather than assumed. The build filed
+        under this machine's architecture is preferred over the loose copy beside
+        this file, because that loose copy can only ever be right for one
+        architecture. It is still used as a fallback, since an installed package
+        may ship nothing else.
 
         Returns:
         str: The path of the library to load.
@@ -309,9 +311,10 @@ class Interpreter:
         else:
             architecture = None
 
-        candidates = [os.path.join(script_dir, name)]
+        candidates = []
         if architecture:
             candidates.append(os.path.join(script_dir, 'architecture', architecture, folder, name))
+        candidates.append(os.path.join(script_dir, name))
 
         for candidate in candidates:
             if os.path.isfile(candidate):
