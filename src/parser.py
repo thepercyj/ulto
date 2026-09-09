@@ -96,7 +96,7 @@ class Parser:
                 return self.parse_expression()
         elif self.current_token[0] == 'LBRACKET':
             return self.consume_value()
-        elif self.current_token[0] == 'REV' and self.peek_next_token()[0] == 'ID':
+        elif self.current_token[0] == 'REV':
             return self.parse_reverse()
         elif self.current_token[0] == 'REVTRACE':
             return self.parse_revtrace()
@@ -216,12 +216,33 @@ class Parser:
         """
         Parses a reverse statement.
 
+        `rev x` steps one variable back. `rev` on its own steps the whole
+        previous statement back, whichever branch or however many iterations it
+        turned out to run.
+
+        Statements are not terminated, so a bare `rev` followed by `x = 5` looks
+        the same as `rev x` followed by `= 5` until one more token is read: an
+        assignment operator after the identifier means the identifier opens the
+        next statement rather than naming the variable to reverse.
+
         Returns:
-        tuple: The parsed reverse node.
+        tuple: The parsed reverse node, with `None` for the block form.
         """
         self.consume('REV')
-        var_name = self.consume('ID')
-        return ('reverse', var_name)
+        if self.current_token and self.current_token[0] == 'ID' and not self.next_starts_assignment():
+            return ('reverse', self.consume('ID'))
+        return ('reverse', None)
+
+    def next_starts_assignment(self):
+        """
+        Reports whether the token after the current one is an assignment operator.
+
+        Returns:
+        bool: True if the current identifier is the target of an assignment.
+        """
+        following = self.peek_next_token()
+        return following is not None and following[0] in [
+            'ASSIGN', 'PLUS_ASSIGN', 'MINUS_ASSIGN', 'TIMES_ASSIGN', 'OVER_ASSIGN']
 
     def parse_revtrace(self):
         """
