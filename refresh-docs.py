@@ -106,6 +106,12 @@ def rewrite(html):
     # Search builds URLs from this root at runtime. Left as "./" it resolves
     # against whichever page is open, which is not where the pages are served.
     html = html.replace('data-content_root="./"', f'data-content_root="{DOCS_ROOT}"')
+
+    # Sphinx stamps the build year into the footer, which would then age until
+    # the next rebuild. These pages are rendered as templates, so the year is
+    # left to the same context the rest of the site uses and stays current
+    # without one.
+    html = re.sub(r'(&#169; Copyright )\d{4}(,)', r'\1{{ current_year }}\2', html)
     return html
 
 
