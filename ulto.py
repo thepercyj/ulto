@@ -7,7 +7,9 @@ from src.interpreter import Interpreter
 
 app = Flask(__name__)
 
-SAMPLE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tests/examples')
+# The codespace offers the same example programs the test suite uses, read from
+# where they already live rather than from a second copy that could drift.
+SAMPLE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tests', 'examples', 'ulto')
 
 
 @app.route('/')
@@ -48,6 +50,56 @@ def reverse():
 @app.route('/docstrings')
 def docstrings():
     return render_template('html/index.html')
+
+
+@app.route('/docstrings/genindex')
+def genindex():
+    return render_template('html/genindex.html')
+
+
+@app.route('/docstrings/search')
+def search():
+    return render_template('html/search.html')
+
+
+@app.route('/docstrings/core')
+def core():
+    return render_template('html/core.html')
+
+
+@app.route('/docstrings/lexer')
+def lexer():
+    return render_template('html/lexer.html')
+
+
+@app.route('/docstrings/parser')
+def parser():
+    return render_template('html/parser.html')
+
+
+@app.route('/docstrings/semantic_analyser')
+def semantic_analyser():
+    return render_template('html/semantic_analyser.html')
+
+
+@app.route('/docstrings/interpreter')
+def interpreter():
+    return render_template('html/interpreter.html')
+
+
+@app.route('/docstrings/lazyeval')
+def lazyeval():
+    return render_template('html/lazyeval.html')
+
+
+@app.route('/docstrings/malloc')
+def malloc():
+    return render_template('html/malloc.html')
+
+
+@app.route('/docstrings/logstack')
+def logstack():
+    return render_template('html/logstack.html')
 
 
 @app.route('/run', methods=['POST'])
