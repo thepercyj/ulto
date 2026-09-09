@@ -4,119 +4,128 @@
 #
 # Aman Thapa Magar <at719@sussex.ac.uk>
 
-import time
 import sys
 
 
 class LogStack:
     """
-    A class to manage a stack-based log of variable values with support for undo operations.
+    A per-variable index into the execution trace.
 
-    The `LogStack` class is designed to keep track of the changes made to variables over time.
-    It stores the history of variable values along with timestamps, allowing for operations
-    like pushing new values, popping the most recent value, peeking at previous values, pruning
-    old entries, and calculating memory usage.
+    `rev x` and `revtrace x n` reach a single variable's history, so they need to
+    find that variable's changes without scanning everything that has happened.
+    This class keeps, for each variable, the positions of the trace events that
+    changed it. The values themselves live in the trace, which stays the single
+    source of truth: keeping them in both places would double the memory a
+    reversible program spends on its own history.
+
+    Positions already undone are skipped rather than removed, so that a variable
+    reversed as part of a whole block is not reversed a second time by a later
+    `rev` naming it directly.
 
     Attributes:
-        log (dict): A dictionary where keys are variable names and values are lists of tuples
-                    storing old values and their corresponding timestamps.
-        last_pruned (float): The last time the log was pruned, stored as a Unix timestamp.
+        trace (ExecutionTrace): The trace the recorded positions point into.
+        log (dict): A dictionary of variable names to lists of trace positions.
     """
 
-    def __init__(self):
+    def __init__(self, trace):
         """
         Initializes a new instance of the LogStack class.
 
-        The constructor initializes an empty log dictionary and sets the `last_pruned`
-        attribute to the current time.
+        Args:
+        trace (ExecutionTrace): The trace this index points into.
         """
+        self.trace = trace
         self.log = {}
-        self.last_pruned = time.time()
 
-    def push(self, var_name, old_value):
+    def push(self, var_name, position):
         """
-        Pushes the old value of a variable onto the log stack.
-
-        If the variable does not have an existing log, a new entry is created.
-        The old value is stored along with the current timestamp.
+        Records that a trace event at the given position changed a variable.
 
         Args:
-            var_name (str): The name of the variable whose value is being logged.
-            old_value (Any): The old value of the variable to be pushed onto the log.
+            var_name (str): The name of the variable that changed.
+            position (int): The position of the event in the trace.
         """
         if var_name not in self.log:
             self.log[var_name] = []
-        self.log[var_name].append((old_value, time.time()))
+        self.log[var_name].append(position)
 
     def pop(self, var_name):
         """
-        Pops the most recent value from the log stack for a given variable.
+        Removes and returns the most recent outstanding change to a variable.
 
-        If the variable has an entry in the log and it is not empty, the most recent
-        value is removed and returned. If the log is empty or the variable does not
-        exist in the log, `None` is returned.
+        Positions whose events have already been undone are discarded on the way
+        past, so a variable reversed as part of a block is not reversed twice.
 
         Args:
-            var_name (str): The name of the variable whose most recent value is to be popped.
+            var_name (str): The name of the variable to reverse.
 
         Returns:
-            Any: The most recent old value of the variable, or `None` if no value is available.
+            int: The trace position of the change, or `None` if there is none.
         """
-        if var_name in self.log and self.log[var_name]:
-            return self.log[var_name].pop()[0]
+        positions = self.log.get(var_name)
+        while positions:
+            position = positions.pop()
+            if not self.trace.is_consumed(position):
+                return position
         return None
 
     def peek(self, var_name, index=1):
         """
-        Peeks at a specific previous value in the log stack for a given variable.
+        Returns a previous change to a variable without reversing it.
 
-        This method allows you to view a previous value without removing it from the stack.
-        The `index` parameter specifies how far back to look (1 for the most recent, 2 for
-        the second most recent, etc.).
+        The `index` parameter specifies how far back to look (1 for the most
+        recent, 2 for the one before it, and so on). Changes already undone are
+        skipped, so the numbering always describes the states still reachable.
 
         Args:
             var_name (str): The name of the variable to peek at.
-            index (int): The position in the log stack to peek at (1 for the most recent).
+            index (int): How many steps back to look.
 
         Returns:
-            Any: The value at the specified position in the log stack, or `None` if the
-                 position is out of range or the variable does not exist.
+            int: The trace position of that change, or `None` if out of range.
         """
-        if var_name in self.log and len(self.log[var_name]) >= index:
-            return self.log[var_name][-index][0]
+        positions = self.log.get(var_name, ())
+        seen = 0
+        for position in reversed(positions):
+            if self.trace.is_consumed(position):
+                continue
+            seen += 1
+            if seen == index:
+                return position
         return None
+
+    def positions(self, var_name):
+        """
+        Lists the outstanding changes to a variable, most recent first.
+
+        Args:
+            var_name (str): The variable to list changes for.
+
+        Returns:
+            list: Trace positions of the changes not yet undone.
+        """
+        return [position for position in reversed(self.log.get(var_name, ()))
+                if not self.trace.is_consumed(position)]
 
     def prune(self, retention_time=50000):
         """
-        Prunes old log entries based on a specified retention time.
-
-        This method removes any entries in the log that are older than the specified
-        `retention_time`. The default retention time is 50,000 seconds. Pruning is
-        only performed if enough time has passed since the last pruning.
+        Prunes the underlying trace of values that have already been reversed.
 
         Args:
-            retention_time (int, optional): The maximum age of log entries to retain, in seconds.
-                                            Entries older than this will be removed. Defaults to 50,000.
+            retention_time (int, optional): The age in seconds past which a
+                                            reversed event's payload is released.
+                                            Defaults to 50,000.
         """
-        current_time = time.time()
-        if current_time - self.last_pruned > retention_time:
-            for var_name in list(self.log.keys()):
-                self.log[var_name] = [val for val in self.log[var_name] if (current_time - val[1]) < retention_time]
-            self.last_pruned = current_time
+        self.trace.prune(retention_time)
 
     def get_memory_usage(self):
         """
-        Calculates the memory usage of the log stack.
-
-        This method computes the total memory usage of the log stack, including the memory
-        used by the log dictionary, variable names, and their stored values.
+        Calculates the memory usage of the index and the trace it points into.
 
         Returns:
-            float: The total memory usage of the log stack in megabytes (MB).
+            float: The total memory usage in megabytes (MB).
         """
         total_size = sys.getsizeof(self.log)
-        for var_name, values in self.log.items():
-            total_size += sys.getsizeof(var_name)
-            for value, _ in values:
-                total_size += sys.getsizeof(value)
-        return total_size / (1024 * 1024)
+        for var_name, positions in self.log.items():
+            total_size += sys.getsizeof(var_name) + sys.getsizeof(positions)
+        return total_size / (1024 * 1024) + self.trace.get_memory_usage()

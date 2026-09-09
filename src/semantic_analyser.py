@@ -212,6 +212,10 @@ class SemanticAnalyser:
         node (tuple): The reverse node.
         """
         _, var_name = node
+        # A bare `rev` names no variable: it reverses the previous statement,
+        # which is resolved at runtime from what actually ran.
+        if var_name is None:
+            return
         if var_name not in self.symbol_table:
             self.error(f'Variable "{var_name}" used before declaration')
 
