@@ -19,6 +19,7 @@
     </ul>
     <h2>Reversibility</h2>
     <p>One of the defining features of the Ulto programming language is its support for reversible computing. Reversibility allows the program's state to be traced back to previous states, providing a powerful mechanism for debugging, rollback, and state management. This is achieved primarily through the <code>rev</code> and <code>revtrace</code> tokens.</p>
+    <p>The <code>rev</code> token has two forms. Named with a variable, it steps that one variable back. Written on its own, it steps back the whole previous statement, which is how an <code>if</code> or a loop is reversed.</p>
 
     <h3>1. The `rev` Token</h3>
     <p>The <code>rev</code> token enables the reversal of a variable's state to its immediately previous value. This operation is sequential, ensuring that the program can only be reversed in the exact order the operations were performed, preserving the integrity of the execution flow.</p>
@@ -36,12 +37,56 @@ print(x)  # Outputs: 10</code></pre>
     <div class="grammar">
         <h4>Grammar Rule: Reverse Statement</h4>
         <pre><code>reverse
-    : REV ID
+    : REV ID?
     ;</code></pre>
-        <p>This grammar rule defines the structure of a <code>rev</code> statement in Ulto. It shows that the <code>rev</code> keyword is followed by an identifier, which specifies the variable to be reversed.</p>
+        <p>This grammar rule defines the structure of a <code>rev</code> statement in Ulto. The identifier is optional: given one, <code>rev</code> reverses that variable, and given none it reverses the previous statement.</p>
     </div>
 
-    <h3>2. The `revtrace` Token</h3>
+    <h3>2. Reversing Control Flow with a bare `rev`</h3>
+    <p>Written without a variable name, <code>rev</code> steps back one whole statement rather than one value. An <code>if</code> reverses whichever branch actually ran, and a loop reverses every iteration it actually performed, the loop variable included. Repeating <code>rev</code> walks back through the block a statement at a time.</p>
+
+    <div class="example">
+        <h4>Example: Reversing an `if` Statement</h4>
+        <pre><code>x = 10
+if x > 5:
+    x = x - 6
+else:
+    x = x + 100
+print(x)  # Outputs: 4
+rev
+print(x)  # Outputs: 10</code></pre>
+        <p>This is the case that shows why reversal is recorded rather than recomputed. After the branch runs, <code>x</code> is 4, so re-testing <code>x &gt; 5</code> would answer false and point at the wrong branch. The branch body destroyed the very value its own condition was testing. Ulto does not re-test it: the changes the branch made were recorded as they happened, so reversing the statement undoes exactly those.</p>
+    </div>
+
+    <div class="example">
+        <h4>Example: Reversing a Loop</h4>
+        <pre><code>k = 0
+total = 0
+for k in range(1, 6):
+    total += k
+    if total &gt; 6:
+        total += 100
+print(total)  # Outputs: 215
+rev
+print(total)  # Outputs: 0, and k is back to 0</code></pre>
+        <p>The nested <code>if</code> fires on some iterations and not others, and nothing needs to record how many times the loop went round. A single <code>rev</code> unwinds the whole statement.</p>
+    </div>
+
+    <div class="example">
+        <h4>Example: Walking Backwards Statement by Statement</h4>
+        <pre><code>p = 0
+p += 3
+p += 10
+p += 100
+print(p)  # Outputs: 113
+rev
+print(p)  # Outputs: 13
+rev
+print(p)  # Outputs: 3</code></pre>
+        <p>Statements that changed no state are stepped over rather than counted, so a <code>print</code> between them does not consume a <code>rev</code>. Output already written cannot be unwritten.</p>
+    </div>
+
+    <h3>3. The `revtrace` Token</h3>
     <p>The <code>revtrace</code> token allows you to view the history of a variable's state over multiple operations. However, unlike <code>rev</code>, <code>revtrace</code> does not revert the variable to a previous state; it only prints the past states for inspection. The actual reversal still requires the use of <code>rev</code>.</p>
 
     <div class="example">
@@ -65,7 +110,7 @@ print(x)  # Outputs: 20 (Reverts one step back to x *= 2)</code></pre>
         <p>This grammar rule defines the structure of a <code>revtrace</code> statement. It includes the <code>revtrace</code> keyword followed by an identifier and a number, indicating how far back in the history to trace.</p>
     </div>
 
-    <h3>3. Preserving State with LogStack</h3>
+    <h3>4. Preserving State with LogStack</h3>
     <p>Unlike traditional programming languages, where variable assignment is often destructive (overwriting the previous value), Ulto uses a log stack to preserve every state change. This allows the program to safely reverse operations without losing any information.</p>
 
     <div class="example">
@@ -77,8 +122,8 @@ print(y)  # Outputs: 50</code></pre>
         <p>Even though <code>y</code> was divided by 2, the original value is preserved in the log stack. The <code>rev</code> operation restores <code>y</code> to 50.</p>
     </div>
 
-    <h3>4. Pruning Operations</h3>
-    <p>To manage memory efficiently, Ulto includes pruning operations that selectively remove older states from the log stack. This ensures that the program doesn't consume excessive memory while still retaining the ability to reverse recent operations.</p>
+    <h3>5. Pruning Operations</h3>
+    <p>To manage memory, Ulto prunes the record of what has happened. Only changes that have already been reversed are released. A change still outstanding is the sole record of how to return to an earlier state, so discarding it would destroy the reversibility the language exists to provide, and under Landauer's principle that discarding is precisely the erasure the language is built to avoid. Having already been reversed, a change carries no such duty, and its stored value can be let go.</p>
 
     <div class="example">
         <h4>Example: Pruning in Action</h4>
@@ -87,8 +132,14 @@ z += 25
 z -= 10
 rev z
 print(z)  # Outputs: 115 (reverts the last operation)</code></pre>
-        <p>Here, <code>rev z</code> reverts the last operation, but older states may be pruned if memory constraints require it. The program ensures that the most recent operations can still be reversed.</p>
+        <p>Reversing <code>z -= 10</code> makes that step eligible for pruning, because it has served its purpose. The steps still ahead of it stay, so <code>z</code> can be walked all the way back to 100.</p>
     </div>
+
+    <h3>6. What Reversal Costs</h3>
+    <p>Keeping history is not free, and Ulto works to make it cheaper wherever the shape of a program allows.</p>
+    <p>A change of the form <code>x += e</code>, where <code>e</code> does not read <code>x</code>, is its own inverse: undoing it is a subtraction rather than a stored value. Nothing has to be kept but the operand, which matters when the replaced value is large and the operand is small.</p>
+    <p>Such changes also compose, so a loop that only adds and subtracts is recorded once for the entire run rather than once per iteration. A thousand <code>i += 1</code> steps undo as a single <code>i -= 1000</code>, and reversing that loop costs the same whether it went round ten times or ten thousand.</p>
+    <p>A variable is left out of that summing wherever it would lose something asked for: if the loop also assigns it outright, if the body contains a reversal, or if <code>rev x</code> or <code>revtrace x n</code> names it anywhere in the program, since both of those walk a variable back one change at a time.</p>
 </div>
 
 {% endblock %}

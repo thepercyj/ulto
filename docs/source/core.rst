@@ -11,6 +11,7 @@ Modules
    lazyeval
    logstack
    malloc
+   trace
 
 Module contents
 ---------------

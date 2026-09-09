@@ -1,5 +1,5 @@
 malloc module
-============
+=============
 
 .. automodule:: src.core.malloc
    :members:

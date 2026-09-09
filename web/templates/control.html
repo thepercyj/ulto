@@ -84,10 +84,27 @@ while x > 0:
         <h4>Example: Nested Conditionals and Loops</h4>
         <pre><code>for i in range(1, 11):
     if i % 2 == 0:
-        print(f"{i} is even")
+        print(i, `is even`)
     else:
-        print(f"{i} is odd")</code></pre>
-        <p>This code iterates through numbers 1 to 10. It checks if each number is even or odd and prints the appropriate message.</p>
+        print(i, `is odd`)</code></pre>
+        <p>This code iterates through numbers 1 to 10. It checks if each number is even or odd and prints the appropriate message. Ulto has no string interpolation, so <code>print</code> is given the value and the text as separate arguments.</p>
+    </div>
+
+    <h3>4. Reversing Control Structures</h3>
+    <p>Conditionals and loops are reversible as single statements. A bare <code>rev</code>, written without a variable name, steps back the previous statement however much work it turned out to do: an <code>if</code> reverses whichever branch actually ran, and a loop reverses every iteration it actually performed, the loop variable included.</p>
+
+    <div class="example">
+        <h4>Example: Reversing a Loop and its Nested Condition</h4>
+        <pre><code>k = 0
+total = 0
+for k in range(1, 6):
+    total += k
+    if total &gt; 6:
+        total += 100
+print(total)  # Outputs: 215
+rev
+print(total)  # Outputs: 0, and k is back to 0</code></pre>
+        <p>The nested <code>if</code> fires on some iterations and not on others, and the loop count is never written down anywhere. Neither has to be recovered, because reversal replays what the statement actually did rather than working out what it should have done. See <a href="{{ url_for('reverse') }}">Reversibility</a> for the detail.</p>
     </div>
 </div>
 
