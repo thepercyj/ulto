@@ -329,11 +329,11 @@ class Interpreter:
         Executes the AST.
 
         Args:
-        capture (bool): When true, the program's output is collected instead of
-                        being written to stdout. A host embedding the
-                        interpreter, such as the web front end, needs the text
-                        back rather than printed, and under a WSGI server there
-                        may be no usable stdout to print to.
+            capture (bool): When true, the program's output is collected instead
+                of being written to stdout. A host embedding the interpreter,
+                such as the web front end, needs the text back rather than
+                printed, and under a WSGI server there may be no usable stdout
+                to print to.
 
         Returns:
         str: The program's output. Empty unless `capture` was requested.

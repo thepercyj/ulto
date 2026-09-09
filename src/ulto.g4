@@ -19,8 +19,13 @@ assignment
     : ID (ASSIGN | PLUS_ASSIGN | MINUS_ASSIGN | TIMES_ASSIGN | OVER_ASSIGN) expression
     ;
 
+// `rev x` steps one variable back. `rev` on its own steps back the whole
+// previous statement: an if reverses whichever branch ran, and a loop reverses
+// every iteration it performed. Statements are not terminated, so `rev` followed
+// by an identifier is read as the variable form only when that identifier is not
+// itself the target of an assignment opening the next statement.
 reverse
-    : REV ID
+    : REV ID?
     ;
 
 revtrace

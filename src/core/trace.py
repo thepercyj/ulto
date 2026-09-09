@@ -137,9 +137,8 @@ class ExecutionTrace:
         be released once it is older than the retention time.
 
         Args:
-        retention_time (int, optional): The age in seconds past which a consumed
-                                        event's payload is released. Defaults to
-                                        50,000.
+            retention_time (int, optional): The age in seconds past which a
+                consumed event's payload is released. Defaults to 50,000.
         """
         current_time = time.time()
         if current_time - self.last_pruned <= retention_time:

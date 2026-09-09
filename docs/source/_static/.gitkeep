@@ -1,0 +1,2 @@
+# Sphinx copies this directory into the build. Kept so html_static_path
+# resolves; add custom CSS or images here.
