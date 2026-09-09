@@ -1,0 +1,4 @@
+sortedcontainers==2.4.0
+
+# Only needed to run the web front end in web/app.py
+Flask==3.1.3
