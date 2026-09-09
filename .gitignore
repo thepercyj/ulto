@@ -6,3 +6,14 @@
 .idea/ulto.iml
 .idea/vcs.xml
 /.idea
+
+# Written by the interpreter on every run
+execution_log.txt
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Build and install artefacts
+build/
+*.egg-info/
