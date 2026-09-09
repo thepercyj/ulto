@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory
+from datetime import date
 import os
 from src.lexer import tokenize
 from src.parser import Parser
@@ -6,6 +7,29 @@ from src.semantic_analyser import SemanticAnalyser
 from src.interpreter import Interpreter
 
 app = Flask(__name__)
+
+
+# The year the project was first published, which a copyright notice runs from.
+FIRST_PUBLISHED = 2024
+
+
+@app.context_processor
+def inject_copyright_years():
+    """
+    Makes the copyright range available to every template.
+
+    The footer's year was being edited by hand, which is why it read 2024 in one
+    place and 2025 in another. A notice covers first publication to the present,
+    so the range is derived rather than written down, and collapses to a single
+    year while there is only one to show.
+
+    Returns:
+    dict: The range and the current year, for templates to render.
+    """
+    year = date.today().year
+    span = str(FIRST_PUBLISHED) if year <= FIRST_PUBLISHED else f'{FIRST_PUBLISHED}–{year}'
+    return {'copyright_years': span, 'current_year': year}
+
 
 SAMPLE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tests/examples')
 

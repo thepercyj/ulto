@@ -9,7 +9,9 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../../'))
 project = 'Ulto - An Imperative Reversible Programming Language'
-copyright = '2024, Aman Thapa Magar'
+# %Y is substituted with the build year, so the range runs from first
+# publication to the present without the notice going stale.
+copyright = '2024-%Y, Aman Thapa Magar'
 author = 'Aman Thapa Magar'
 release = 'v1.0.1'
 
