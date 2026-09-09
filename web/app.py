@@ -9,18 +9,26 @@ from src.interpreter import Interpreter
 app = Flask(__name__)
 
 
-@app.context_processor
-def inject_current_year():
-    """
-    Makes the current year available to every template.
+# The year the project was first published, which a copyright notice runs from.
+FIRST_PUBLISHED = 2024
 
-    The footer's copyright year was being edited by hand, which is why it read
-    2024 in one place and 2025 in another.
+
+@app.context_processor
+def inject_copyright_years():
+    """
+    Makes the copyright range available to every template.
+
+    The footer's year was being edited by hand, which is why it read 2024 in one
+    place and 2025 in another. A notice covers first publication to the present,
+    so the range is derived rather than written down, and collapses to a single
+    year while there is only one to show.
 
     Returns:
-    dict: The year, for templates to render.
+    dict: The range and the current year, for templates to render.
     """
-    return {'current_year': date.today().year}
+    year = date.today().year
+    span = str(FIRST_PUBLISHED) if year <= FIRST_PUBLISHED else f'{FIRST_PUBLISHED}–{year}'
+    return {'copyright_years': span, 'current_year': year}
 
 
 SAMPLE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tests/examples')
